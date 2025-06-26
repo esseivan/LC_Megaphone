@@ -62,10 +62,30 @@ public class Megaphone : BaseUnityPlugin
 
         CreateTerminalCommands();
 
+        CreateItems();
+
         if (configDisplayGreeting.Value)
             Logger.LogDebug(configGreeting.Value);
 
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
+    }
+
+    private static void CreateItems()
+    {
+        int iPrice = 15;
+        int iRarity = 100;
+        Item MyCustomItem = Assets.LoadAsset<Item>("megaphoneitem");
+        MyLog.Logger.LogDebug($"Found item '{MyCustomItem.itemName}'");
+
+        LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(MyCustomItem.spawnPrefab);
+        LethalLib.Modules.Items.RegisterScrap(
+            MyCustomItem,
+            iRarity,
+            LethalLib.Modules.Levels.LevelTypes.All
+        );
+
+        TerminalNode iTerminalNode = Assets.LoadAsset<TerminalNode>("iterminalnodemegaphone");
+        LethalLib.Modules.Items.RegisterShopItem(MyCustomItem, null, null, iTerminalNode, iPrice);
     }
 
     private static void LoadAssets()

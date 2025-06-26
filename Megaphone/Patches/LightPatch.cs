@@ -14,13 +14,6 @@ public class LightPatch
     [HarmonyPostfix]
     private static void ToggleShipLightsPostfix(ShipLights __instance)
     {
-        int iPrice = 100;
-        Item MyCustomItem = Megaphone.Assets.LoadAsset<Item>("megaphoneitem");
-        MyLog.Logger.LogDebug($"Found item '{MyCustomItem.itemName}'");
-        TerminalNode iTerminalNode = Megaphone.Assets.LoadAsset<TerminalNode>(
-            "iterminalnodemegaphone"
-        );
-        LethalLib.Modules.Items.RegisterShopItem(MyCustomItem, null, null, iTerminalNode, iPrice);
         //bool isOn = __instance.areLightsOn;
 
         //MyLog.Logger.LogDebug("ToggleShipLightsPostfix() called");
