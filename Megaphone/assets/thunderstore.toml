@@ -1,0 +1,47 @@
+[config]
+schemaVersion = "0.0.1"
+
+[general]
+repository = "https://thunderstore.io"
+
+[package]
+namespace = "esn"
+name = "Megaphone"
+description = "Adds a Megaphone item that changes the user voice"
+websiteUrl = "https://github.com/esseivan/LC_Megaphone"
+containsNsfwContent = false
+[package.dependencies]
+BepInEx-BepInExPack = "5.4.2100"
+NotAtomicBomb-TerminalApi = "1.5.0"
+
+[build]
+icon = "icon.png"
+readme = "../../README.md"
+outdir = "../dist"
+
+[[build.copy]]
+source = "../bin/Release/netstandard2.1/ESN.Megaphone.dll"
+target = "plugins/ESN.Megaphone/"
+
+[[build.copy]]
+source = "esnassets2"
+target = "plugins/ESN.Megaphone/assets/"
+
+[[build.copy]]
+source = "../../CHANGELOG.md"
+target = "/"
+
+[[build.copy]]
+source = "../../LICENSE"
+target = "/"
+
+[[build.copy]]
+source = "../../LICENSES"
+target = "/LICENSES/"
+
+[publish]
+communities = [ "lethal-company", ]
+[publish.categories]
+lethal-company = [ "mods", "misc", ]
+
+

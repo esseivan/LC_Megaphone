@@ -1,0 +1,3 @@
+echo Copying assets from Unity project...
+
+COPY "C:\workspace\LethalCompanyUnityTemplate\AssetBundles\StandaloneWindows\esnassets" "assets\esnassets2"
