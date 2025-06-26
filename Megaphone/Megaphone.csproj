@@ -109,7 +109,7 @@
       <BepInExPluginVersion>$(PlainVersion)</BepInExPluginVersion>
     </PropertyGroup>
   </Target>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="$(Configuration) == 'Debug'">
     <Exec Command="call copyAssets.bat" />
   </Target>
   <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">

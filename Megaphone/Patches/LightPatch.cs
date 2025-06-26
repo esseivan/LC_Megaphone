@@ -11,10 +11,21 @@ namespace Megaphone.Patches;
 public class LightPatch
 {
     [HarmonyPatch(nameof(ShipLights.ToggleShipLights))]
-    [HarmonyPostfix]
-    private static void ToggleShipLightsPostfix(ShipLights __instance)
+    [HarmonyPrefix]
+    private static bool ToggleShipLightsPostfix(ShipLights __instance)
     {
-        //bool isOn = __instance.areLightsOn;
+        Item MyCustomItem = Megaphone.Assets.LoadAsset<Item>("Assets/MegaphoneItem.asset");
+        GameObject gameObject = Object.Instantiate<GameObject>(
+            MyCustomItem.spawnPrefab,
+            __instance.transform.position,
+            Quaternion.identity,
+            StartOfRound.Instance.propsContainer
+        );
+        gameObject.GetComponent<GrabbableObject>().fallTime = 0.0f;
+        gameObject.GetComponent<NetworkObject>().Spawn();
+        gameObject.GetComponent<NetworkObject>().TrySetParent(gameObject.transform.parent);
+
+        return false;
 
         //MyLog.Logger.LogDebug("ToggleShipLightsPostfix() called");
         //MyLog.Logger.LogDebug($"Lights are {isOn}");

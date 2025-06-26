@@ -6,6 +6,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using LobbyCompatibility.Attributes;
 using LobbyCompatibility.Enums;
+using Megaphone.Items;
 using Megaphone.Patches;
 using Newtonsoft.Json;
 using TerminalApi;
@@ -74,18 +75,28 @@ public class Megaphone : BaseUnityPlugin
     {
         int iPrice = 15;
         int iRarity = 100;
-        Item MyCustomItem = Assets.LoadAsset<Item>("megaphoneitem");
-        MyLog.Logger.LogDebug($"Found item '{MyCustomItem.itemName}'");
+        Item megaphoneItem = Assets.LoadAsset<Item>("Assets/MegaphoneItem.asset");
+        Logger.LogDebug($"Found item {megaphoneItem.itemName}");
+        MegaphoneItem script = megaphoneItem.spawnPrefab.AddComponent<MegaphoneItem>();
+        Logger.LogDebug($"Found script {script}");
+        script.grabbable = true;
+        script.isInFactory = true;
+        script.itemProperties = megaphoneItem;
+        script.grabbableToEnemies = true;
 
-        LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(MyCustomItem.spawnPrefab);
+        MyLog.Logger.LogDebug($"Found item '{megaphoneItem.itemName}'");
+
+        LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(megaphoneItem.spawnPrefab);
         LethalLib.Modules.Items.RegisterScrap(
-            MyCustomItem,
+            megaphoneItem,
             iRarity,
             LethalLib.Modules.Levels.LevelTypes.All
         );
 
-        TerminalNode iTerminalNode = Assets.LoadAsset<TerminalNode>("iterminalnodemegaphone");
-        LethalLib.Modules.Items.RegisterShopItem(MyCustomItem, null, null, iTerminalNode, iPrice);
+        TerminalNode iTerminalNode = Assets.LoadAsset<TerminalNode>(
+            "Assets/iTerminalNodeMegaphone.asset"
+        );
+        LethalLib.Modules.Items.RegisterShopItem(megaphoneItem, null, null, iTerminalNode, iPrice);
     }
 
     private static void LoadAssets()
