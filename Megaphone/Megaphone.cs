@@ -17,6 +17,7 @@ namespace Megaphone;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency("atomic.terminalapi", MinimumDependencyVersion: "1.5.0")]
+[BepInDependency(LethalLib.Plugin.ModGUID)]
 //[BepInDependency("BMX.LobbyCompatibility", BepInDependency.DependencyFlags.HardDependency)]
 //[LobbyCompatibility(CompatibilityLevel.ClientOnly, VersionStrictness.None)]
 public class Megaphone : BaseUnityPlugin
@@ -29,6 +30,7 @@ public class Megaphone : BaseUnityPlugin
     public static ConfigEntry<bool> configDisplayGreeting;
 
     public static AssetBundle Assets;
+    public static AssetBundle Assets_network;
 
     private void SetupConfigBinds()
     {
@@ -69,15 +71,29 @@ public class Megaphone : BaseUnityPlugin
     private static void LoadAssets()
     {
         string sAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        Assets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "assets/esnassets2"));
+        Assets = AssetBundle.LoadFromFile(Path.Combine(sAssemblyLocation, "assets/esn_megaphone"));
         if (Assets == null)
         {
             Logger.LogError("Failed to load custom assets.");
             return;
         }
 
+        Assets_network = AssetBundle.LoadFromFile(
+            Path.Combine(sAssemblyLocation, "assets/esn_network")
+        );
+        if (Assets == null)
+        {
+            Logger.LogError("Failed to load network assets.");
+            return;
+        }
+
         Logger.LogDebug($"Assets loaded");
         string[] names = Assets.GetAllAssetNames();
+        foreach (string name in names)
+        {
+            Logger.LogDebug($"{name}");
+        }
+        names = Assets_network.GetAllAssetNames();
         foreach (string name in names)
         {
             Logger.LogDebug($"{name}");

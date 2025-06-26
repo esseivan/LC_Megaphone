@@ -18,7 +18,6 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
   </PropertyGroup> -->
-
   <!-- Set NuGet Sources -->
   <PropertyGroup>
     <RestoreAdditionalProjectSources>
@@ -42,7 +41,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-
   <!-- Primary Package References -->
   <ItemGroup>
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
@@ -54,13 +52,22 @@
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" PrivateAssets="all" />
     <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" PrivateAssets="all" />
     <PackageReference Include="NotAtomicBomb.TerminalApi" Version="1.5.4" />
-    <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" PrivateAssets="all" />
+    <PackageReference Include="Evaisa.LethalLib" Version="0.*" />
+    <PackageReference
+      Include="UnityEngine.Modules"
+      Version="2022.3.9"
+      IncludeAssets="compile"
+      PrivateAssets="all"
+    />
     <PackageReference Include="TeamBMX.LobbyCompatibility" Version="1.*" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+    <PackageReference
+      Include="Microsoft.NETFramework.ReferenceAssemblies"
+      Version="1.0.2"
+      PrivateAssets="all"
+    />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
@@ -73,57 +80,61 @@
       <HintPath>..\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <ItemGroup>
-    <None Update="assets\esnassets2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="assets\esn_megaphone">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\esn_network">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-    <!-- MinVer package included in all projects -->
+  <!-- MinVer package included in all projects -->
   <ItemGroup>
-      <PackageReference Include="MinVer" Version="4.3.0">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
-      </PackageReference>
+    <PackageReference Include="MinVer" Version="4.3.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <!-- MinVer for automatic versioning from git tags -->
   <PropertyGroup>
-      <MinVerDefaultPreReleaseIdentifiers>dev</MinVerDefaultPreReleaseIdentifiers>
-      <MinVerTagPrefix>v</MinVerTagPrefix>
+    <MinVerDefaultPreReleaseIdentifiers>dev</MinVerDefaultPreReleaseIdentifiers>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
   </PropertyGroup>
-
   <Target Name="SetPluginVersion" BeforeTargets="AddGeneratedFile" DependsOnTargets="MinVer">
-      <PropertyGroup>
-          <PlainVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch)</PlainVersion>
-          <BepInExPluginVersion>$(PlainVersion)</BepInExPluginVersion>
-      </PropertyGroup>
+    <PropertyGroup>
+      <PlainVersion>$(MinVerMajor).$(MinVerMinor).$(MinVerPatch)</PlainVersion>
+      <BepInExPluginVersion>$(PlainVersion)</BepInExPluginVersion>
+    </PropertyGroup>
   </Target>
-
-  <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')" />
-  </Target>
-
-  <Target Name="CopyAssets" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Debug'">
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="call copyAssets.bat" />
+  </Target>
+  <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies-&gt;'&quot;%(Identity)&quot;', ' ')" />
   </Target>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Debug'">
     <Exec Command="call postbuild.bat" />
   </Target>
-
-  <Target Name="PackThunderstore" DependsOnTargets="NetcodePatch;SetPluginVersion" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
+  <Target
+    Name="PackThunderstore"
+    DependsOnTargets="NetcodePatch;SetPluginVersion"
+    AfterTargets="PostBuildEvent"
+    Condition="$(Configuration) == 'Release'"
+  >
     <MakeDir Directories="$(ProjectDir)assets" Condition="!Exists('$(ProjectDir)assets')" />
     <Exec Command="dotnet tcli build --config-path $(ProjectDir)assets/thunderstore.toml --package-version $(PlainVersion)" />
     <ItemGroup>
-        <FilesToRename Include="$(ProjectDir)dist/*-$(PlainVersion).zip" />
+      <FilesToRename Include="$(ProjectDir)dist/*-$(PlainVersion).zip" />
     </ItemGroup>
-    <Move SourceFiles="@(FilesToRename)" DestinationFiles="@(FilesToRename -&gt; Replace($(PlainVersion), $(MinVerVersion)))" />
-</Target>
-
-<Target Name="PublishThunderstore" DependsOnTargets="SetPluginVersion">
+    <Move
+      SourceFiles="@(FilesToRename)"
+      DestinationFiles="@(FilesToRename -&gt; Replace($(PlainVersion), $(MinVerVersion)))"
+    />
+  </Target>
+  <Target Name="PublishThunderstore" DependsOnTargets="SetPluginVersion">
     <Exec Command="dotnet tcli publish --config-path $(ProjectDir)assets/thunderstore.toml --file $(ProjectDir)dist/*-$(MinVerVersion).zip" />
-</Target>
+  </Target>
 </Project>

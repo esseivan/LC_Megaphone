@@ -24,7 +24,7 @@ source = "../bin/Release/netstandard2.1/ESN.Megaphone.dll"
 target = "plugins/ESN.Megaphone/"
 
 [[build.copy]]
-source = "esnassets2"
+source = "esn_megaphone"
 target = "plugins/ESN.Megaphone/assets/"
 
 [[build.copy]]

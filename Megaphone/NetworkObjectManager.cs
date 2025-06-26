@@ -13,7 +13,7 @@ public class NetworkObjectManager
         if (networkPrefab != null)
             return;
 
-        networkPrefab = (GameObject)Megaphone.Assets.LoadAsset("ExampleNetworkHandler");
+        networkPrefab = (GameObject)Megaphone.Assets_network.LoadAsset("ExampleNetworkHandler");
         networkPrefab.AddComponent<ExampleNetworkHandler>();
 
         NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
