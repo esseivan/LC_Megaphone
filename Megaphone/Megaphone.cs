@@ -77,7 +77,7 @@ public class Megaphone : BaseUnityPlugin
         int iRarity = 100;
         Item megaphoneItem = Assets.LoadAsset<Item>("Assets/MegaphoneItem.asset");
         Logger.LogDebug($"Found item {megaphoneItem.itemName}");
-        MegaphoneItem script = megaphoneItem.spawnPrefab.AddComponent<MegaphoneItem>();
+        GrabbableObject script = megaphoneItem.spawnPrefab.AddComponent<MegaphoneItem>();
         Logger.LogDebug($"Found script {script}");
         script.grabbable = true;
         script.isInFactory = true;

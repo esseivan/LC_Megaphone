@@ -5,10 +5,11 @@ using UnityEngine;
 
 namespace Megaphone.Items
 {
-    public class MegaphoneItem : PhysicsProp
+    public class MegaphoneItem : GrabbableObject
     {
         public override void Start()
         {
+            MyLog.Logger.LogDebug("MegaphoneItem item created !");
             base.Start();
             itemProperties.itemIsTrigger = false;
             itemProperties.batteryUsage = 25;
@@ -19,11 +20,24 @@ namespace Megaphone.Items
         /// </summary>
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
+            MyLog.Logger.LogDebug("ItemActivate() called !");
+
             // Make it detectable by ennemies, do not actually play a sound
-            AudioSource audio = this.GetComponent<AudioSource>();
+            AudioSource audio = GetComponent<AudioSource>();
+            MyLog.Logger.LogDebug($"Found audio : {audio}");
             if (audio != null)
             {
+                MyLog.Logger.LogDebug($"\t{audio.isActiveAndEnabled}");
+                MyLog.Logger.LogDebug($"\t{audio.clip}");
+                MyLog.Logger.LogDebug($"\t{audio.clip.name}");
                 audio.Play();
+
+                MyLog.Logger.LogDebug($"Found RoundManager {RoundManager.Instance}");
+                MyLog.Logger.LogDebug($"Found isInElevator {isInElevator}");
+                MyLog.Logger.LogDebug($"Found StartOfRound.Instance {StartOfRound.Instance}");
+                MyLog.Logger.LogDebug(
+                    $"Found StartOfRound.Instance.hangarDoorsClosed {StartOfRound.Instance.hangarDoorsClosed}"
+                );
                 RoundManager.Instance.PlayAudibleNoise(
                     transform.position,
                     10f,
