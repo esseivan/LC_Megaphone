@@ -30,6 +30,7 @@ namespace Megaphone.Items
         /// <param name="right">True if 'E', false if 'Q'</param>
         public override void ItemInteractLeftRight(bool right)
         {
+            MyLog.Logger.LogDebug($"ItemInteractLeftRight({right})");
             base.ItemInteractLeftRight(right);
             // Switch mode
             MyLog.Logger.LogDebug($"Device used : {isBeingUsed}");
@@ -69,6 +70,7 @@ namespace Megaphone.Items
 
         public override void PocketItem()
         {
+            MyLog.Logger.LogDebug($"PocketItem()");
             if (this.IsOwner && this.playerHeldBy != null)
             {
                 this.playerHeldBy.equippedUsableItemQE = false;
@@ -78,12 +80,14 @@ namespace Megaphone.Items
         }
         public override void EquipItem()
         {
+            MyLog.Logger.LogDebug($"EquipItem()");
             base.EquipItem();
             this.playerHeldBy.equippedUsableItemQE = true;
         }
 
         public override void DiscardItem()
         {
+            MyLog.Logger.LogDebug($"DiscardItem()");
             // Play sound on death
             //if (this.playerHeldBy.isPlayerDead && this.clientIsHoldingAndSpeakingIntoThis)
             //    this.BroadcastSFXFromWalkieTalkie(this.playerDieOnWalkieTalkieSFX, (int)this.playerHeldBy.playerClientId);
@@ -96,7 +100,7 @@ namespace Megaphone.Items
         /// </summary>
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
-            MyLog.Logger.LogDebug($"ItemActivate({used}, {buttonDown}) called !");
+            MyLog.Logger.LogDebug($"ItemActivate({used}, {buttonDown})");
             SwitchOnOff(used);
 
             if (!this.IsOwner)
@@ -149,6 +153,7 @@ namespace Megaphone.Items
         /// </summary>
         public override void UseUpBatteries()
         {
+            MyLog.Logger.LogDebug($"UseUpBatteries()");
             base.UseUpBatteries();
             //this.SwitchFlashlight(false);
             //this.flashlightAudio.PlayOneShot(this.outOfBatteriesClip, 1f);
@@ -162,6 +167,7 @@ namespace Megaphone.Items
 
         public void SwitchOnOff(bool state)
         {
+            MyLog.Logger.LogDebug($"SwitchOnOff({state})");
             isBeingUsed = state;
             // Do stuff here
         }
