@@ -14,7 +14,7 @@ public class NetworkObjectManager
             return;
 
         networkPrefab = (GameObject)
-            Megaphone.Assets_network.LoadAsset("Assets/ExampleNetworkHandler.prefab");
+            Plugin.Assets_network.LoadAsset("Assets/ExampleNetworkHandler.prefab");
         networkPrefab.AddComponent<ExampleNetworkHandler>();
 
         NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);

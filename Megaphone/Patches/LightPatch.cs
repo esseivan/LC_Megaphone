@@ -14,7 +14,7 @@ public class LightPatch
     [HarmonyPrefix]
     private static bool ToggleShipLightsPostfix(ShipLights __instance)
     {
-        Item MyCustomItem = Megaphone.Assets.LoadAsset<Item>("Assets/MegaphoneItem.asset");
+        Item MyCustomItem = Megaphone.Assets.LoadAsset<Item>(Megaphone.ASSET_PATH_MEGAPHONE_ITEM);
         GameObject gameObject = Object.Instantiate<GameObject>(
             MyCustomItem.spawnPrefab,
             __instance.transform.position,
