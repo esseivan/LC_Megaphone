@@ -19,7 +19,6 @@ namespace Megaphone.Items
             itemProperties.syncUseFunction = true;
             itemProperties.syncInteractLRFunction = true;
             itemProperties.syncDiscardFunction = true;
-            itemProperties.automaticallySetUsingPower = true;
             itemProperties.holdButtonUse = true;
             audioMode = 0;
         }
@@ -98,10 +97,12 @@ namespace Megaphone.Items
         /// <summary>
         /// Used when the user activates the object
         /// </summary>
+        /// <param name="used">State of the 'isBeingUsed' variable</param>
+        /// <param name="buttonDown">Is the button currently pressed</param>
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
             MyLog.Logger.LogDebug($"ItemActivate({used}, {buttonDown})");
-            SwitchOnOff(used);
+            SwitchOnOff(buttonDown); // Hold to enable
 
             if (!this.IsOwner)
             {
