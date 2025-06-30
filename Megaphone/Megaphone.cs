@@ -23,6 +23,9 @@ namespace Megaphone;
 //[LobbyCompatibility(CompatibilityLevel.ClientOnly, VersionStrictness.None)]
 public class Megaphone : BaseUnityPlugin
 {
+    public const string ASSET_PATH_MEGAPHONE_ITEM = "Assets/Megaphone/MegaphoneItem.asset";
+    public const string ASSET_PATH_MEGAPHONE_TNODE = "Assets/Megaphone/iTerminalNodeMegaphone.asset";
+
     public static Megaphone Instance { get; private set; } = null!;
     internal static new ManualLogSource Logger { get; private set; } = null!;
     internal static Harmony Harmony { get; set; }
@@ -75,7 +78,7 @@ public class Megaphone : BaseUnityPlugin
     {
         int iPrice = 15;
         int iRarity = 100;
-        Item megaphoneItem = Assets.LoadAsset<Item>("Assets/MegaphoneItem.asset");
+        Item megaphoneItem = Assets.LoadAsset<Item>(ASSET_PATH_MEGAPHONE_ITEM);
         Logger.LogDebug($"Found item {megaphoneItem.itemName}");
         GrabbableObject script = megaphoneItem.spawnPrefab.AddComponent<MegaphoneItem>();
         Logger.LogDebug($"Found script {script}");
@@ -93,9 +96,7 @@ public class Megaphone : BaseUnityPlugin
             LethalLib.Modules.Levels.LevelTypes.All
         );
 
-        TerminalNode iTerminalNode = Assets.LoadAsset<TerminalNode>(
-            "Assets/iTerminalNodeMegaphone.asset"
-        );
+        TerminalNode iTerminalNode = Assets.LoadAsset<TerminalNode>(ASSET_PATH_MEGAPHONE_TNODE);
         LethalLib.Modules.Items.RegisterShopItem(megaphoneItem, null, null, iTerminalNode, iPrice);
     }
 

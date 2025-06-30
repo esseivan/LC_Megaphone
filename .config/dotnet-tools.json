@@ -6,13 +6,22 @@
       "version": "0.2.4",
       "commands": [
         "tcli"
-      ]
+      ],
+      "rollForward": false
     },
     "evaisa.netcodepatcher.cli": {
       "version": "4.3.0",
       "commands": [
         "netcode-patch"
-      ]
+      ],
+      "rollForward": false
+    },
+    "csharpier": {
+      "version": "1.0.3",
+      "commands": [
+        "csharpier"
+      ],
+      "rollForward": false
     }
   }
 }

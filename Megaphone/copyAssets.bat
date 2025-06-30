@@ -1,4 +1,4 @@
 echo Copying assets from Unity project...
 
-COPY "C:\workspace\LethalCompanyUnityTemplate\AssetBundles\StandaloneWindows\esn_megaphone" "assets\esn_megaphone"
-COPY "C:\workspace\LethalCompanyUnityTemplate\AssetBundles\StandaloneWindows\esn_network" "assets\esn_network"
+COPY "..\..\LC_Unity\AssetBundles\StandaloneWindows\esn_megaphone" "assets\esn_megaphone"
+COPY "..\..\LC_Unity\AssetBundles\StandaloneWindows\esn_network" "assets\esn_network"
