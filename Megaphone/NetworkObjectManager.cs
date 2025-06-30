@@ -13,8 +13,7 @@ public class NetworkObjectManager
         if (networkPrefab != null)
             return;
 
-        networkPrefab = (GameObject)
-            Plugin.Assets_network.LoadAsset("Assets/ExampleNetworkHandler.prefab");
+        networkPrefab = (GameObject)Plugin.Assets_network.LoadAsset(Plugin.ASSET_PATH_NET_HANDLER);
         networkPrefab.AddComponent<ExampleNetworkHandler>();
 
         NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);

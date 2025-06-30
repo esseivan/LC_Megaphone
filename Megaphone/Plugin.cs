@@ -25,7 +25,9 @@ namespace Megaphone;
 public class Plugin : BaseUnityPlugin
 {
     public const string ASSET_PATH_MEGAPHONE_ITEM = "Assets/Megaphone/MegaphoneItem.asset";
-    public const string ASSET_PATH_MEGAPHONE_TNODE = "Assets/Megaphone/iTerminalNodeMegaphone.asset";
+    public const string ASSET_PATH_MEGAPHONE_TNODE =
+        "Assets/Megaphone/iTerminalNodeMegaphone.asset";
+    public const string ASSET_PATH_NET_HANDLER = "Assets/Network/ExampleNetworkHandler.prefab";
 
     public static Plugin Instance { get; private set; } = null!;
     internal static new ManualLogSource Logger { get; private set; } = null!;
