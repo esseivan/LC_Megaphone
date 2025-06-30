@@ -8,6 +8,7 @@ using LobbyCompatibility.Attributes;
 using LobbyCompatibility.Enums;
 using Megaphone.Items;
 using Megaphone.Patches;
+using Megaphone.Scripts;
 using Newtonsoft.Json;
 using TerminalApi;
 using TerminalApi.Classes;
@@ -21,12 +22,12 @@ namespace Megaphone;
 [BepInDependency(LethalLib.Plugin.ModGUID)]
 //[BepInDependency("BMX.LobbyCompatibility", BepInDependency.DependencyFlags.HardDependency)]
 //[LobbyCompatibility(CompatibilityLevel.ClientOnly, VersionStrictness.None)]
-public class Megaphone : BaseUnityPlugin
+public class Plugin : BaseUnityPlugin
 {
     public const string ASSET_PATH_MEGAPHONE_ITEM = "Assets/Megaphone/MegaphoneItem.asset";
     public const string ASSET_PATH_MEGAPHONE_TNODE = "Assets/Megaphone/iTerminalNodeMegaphone.asset";
 
-    public static Megaphone Instance { get; private set; } = null!;
+    public static Plugin Instance { get; private set; } = null!;
     internal static new ManualLogSource Logger { get; private set; } = null!;
     internal static Harmony Harmony { get; set; }
 
@@ -134,25 +135,25 @@ public class Megaphone : BaseUnityPlugin
 
     private static void CreateTerminalCommands()
     {
-        AddCommand(
-            "ron",
-            new CommandInfo
-            {
-                Category = "other",
-                Description = "Enable robot voices",
-                DisplayTextSupplier = Commands.EnableRobotVoice,
-            }
-        );
+        //AddCommand(
+        //    "ron",
+        //    new CommandInfo
+        //    {
+        //        Category = "other",
+        //        Description = "Enable robot voices",
+        //        DisplayTextSupplier = AudioMod.EnableRobotVoice,
+        //    }
+        //);
 
-        AddCommand(
-            "roff",
-            new CommandInfo
-            {
-                Category = "other",
-                Description = "Disable robot voices",
-                DisplayTextSupplier = Commands.DisableRobotVoice,
-            }
-        );
+        //AddCommand(
+        //    "roff",
+        //    new CommandInfo
+        //    {
+        //        Category = "other",
+        //        Description = "Disable robot voices",
+        //        DisplayTextSupplier = AudioMod.DisableRobotVoice,
+        //    }
+        //);
     }
 
     private static void NetcodePatcher()

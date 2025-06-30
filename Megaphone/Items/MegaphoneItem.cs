@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Megaphone.Scripts;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -7,12 +8,87 @@ namespace Megaphone.Items
 {
     public class MegaphoneItem : GrabbableObject
     {
+        public int audioMode;
+
         public override void Start()
         {
             MyLog.Logger.LogDebug("MegaphoneItem item created !");
             base.Start();
             itemProperties.itemIsTrigger = false;
-            itemProperties.batteryUsage = 25;
+            itemProperties.batteryUsage = 120; // Number of seconds it can stay on
+            itemProperties.syncUseFunction = true;
+            itemProperties.syncInteractLRFunction = true;
+            itemProperties.syncDiscardFunction = true;
+            itemProperties.automaticallySetUsingPower = true;
+            itemProperties.holdButtonUse = true;
+            audioMode = 0;
+        }
+
+        /// <summary>
+        /// Q and E presses
+        /// </summary>
+        /// <param name="right">True if 'E', false if 'Q'</param>
+        public override void ItemInteractLeftRight(bool right)
+        {
+            base.ItemInteractLeftRight(right);
+            // Switch mode
+            MyLog.Logger.LogDebug($"Device used : {isBeingUsed}");
+            MyLog.Logger.LogDebug($"right/left : {(right ? "1" : "0")}");
+            if (right)
+                return;
+            audioMode++;
+            audioMode = (audioMode < 3) ? audioMode : 0;
+            MyLog.Logger.LogInfo($"Switched to mode {audioMode}");
+            if (this.isBeingUsed)
+            {
+                // Replace audio ; Disable previous and enable current (if being used)
+                // BUT need to sync with the clients !!
+                // Therefore, required to use serverRPC and clientRPC
+                // BUT : the base is : 
+                /*
+                 *    public void ItemInteractLeftRightOnClient(bool right)
+                      {
+                        if (!this.IsOwner)
+                        {
+                          Debug.Log((object) "InteractLeftRight was called but player was not the owner.");
+                        }
+                        else
+                        {
+                          if (this.RequireCooldown() || !this.UseItemBatteries(true))
+                            return;
+                          this.ItemInteractLeftRight(right);
+                          if (!this.itemProperties.syncInteractLRFunction)
+                            return;
+                          ++this.isSendingItemRPC;
+                          this.InteractLeftRightServerRpc(right);
+                        }
+                      }
+                 */
+            }
+        }
+
+        public override void PocketItem()
+        {
+            if (this.IsOwner && this.playerHeldBy != null)
+            {
+                this.playerHeldBy.equippedUsableItemQE = false;
+                this.isBeingUsed = false;
+            }
+            base.PocketItem();
+        }
+        public override void EquipItem()
+        {
+            base.EquipItem();
+            this.playerHeldBy.equippedUsableItemQE = true;
+        }
+
+        public override void DiscardItem()
+        {
+            // Play sound on death
+            //if (this.playerHeldBy.isPlayerDead && this.clientIsHoldingAndSpeakingIntoThis)
+            //    this.BroadcastSFXFromWalkieTalkie(this.playerDieOnWalkieTalkieSFX, (int)this.playerHeldBy.playerClientId);
+            this.playerHeldBy.equippedUsableItemQE = false;
+            base.DiscardItem();
         }
 
         /// <summary>
@@ -20,31 +96,52 @@ namespace Megaphone.Items
         /// </summary>
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
-            MyLog.Logger.LogDebug("ItemActivate() called !");
+            MyLog.Logger.LogDebug($"ItemActivate({used}, {buttonDown}) called !");
+            SwitchOnOff(used);
+
+            if (!this.IsOwner)
+            {
+                MyLog.Logger.LogInfo($"Flashlight click. playerheldby: {this.playerHeldBy}");
+                if (this.playerHeldBy != null)
+                {
+                    if (used)
+                    {
+                        AudioMod.EnableRobotVoice(this.playerHeldBy);
+                    }
+                    else
+                    {
+                        AudioMod.DisableRobotVoice(this.playerHeldBy);
+                    }
+                }
+            }
+            else
+            {
+                MyLog.Logger.LogInfo($"Flashlight click by owner");
+            }
 
             // Make it detectable by ennemies, do not actually play a sound
-            AudioSource audio = GetComponent<AudioSource>();
-            MyLog.Logger.LogDebug($"Found audio : {audio}");
-            if (audio != null)
-            {
-                MyLog.Logger.LogDebug($"\t{audio.isActiveAndEnabled}");
-                MyLog.Logger.LogDebug($"\t{audio.clip}");
-                MyLog.Logger.LogDebug($"\t{audio.clip.name}");
-                audio.Play();
+            //AudioSource audio = GetComponent<AudioSource>();
+            //MyLog.Logger.LogDebug($"Found audio : {audio}");
+            //if (audio != null)
+            //{
+            //    MyLog.Logger.LogDebug($"\t{audio.isActiveAndEnabled}");
+            //    MyLog.Logger.LogDebug($"\t{audio.clip}");
+            //    MyLog.Logger.LogDebug($"\t{audio.clip.name}");
+            //    audio.Play();
 
-                MyLog.Logger.LogDebug($"Found RoundManager {RoundManager.Instance}");
-                MyLog.Logger.LogDebug($"Found isInElevator {isInElevator}");
-                MyLog.Logger.LogDebug($"Found StartOfRound.Instance {StartOfRound.Instance}");
-                MyLog.Logger.LogDebug(
-                    $"Found StartOfRound.Instance.hangarDoorsClosed {StartOfRound.Instance.hangarDoorsClosed}"
-                );
-                RoundManager.Instance.PlayAudibleNoise(
-                    transform.position,
-                    10f,
-                    0.7f,
-                    noiseIsInsideClosedShip: isInElevator && StartOfRound.Instance.hangarDoorsClosed
-                );
-            }
+                //    MyLog.Logger.LogDebug($"Found RoundManager {RoundManager.Instance}");
+                //    MyLog.Logger.LogDebug($"Found isInElevator {isInElevator}");
+                //    MyLog.Logger.LogDebug($"Found StartOfRound.Instance {StartOfRound.Instance}");
+                //    MyLog.Logger.LogDebug(
+                //        $"Found StartOfRound.Instance.hangarDoorsClosed {StartOfRound.Instance.hangarDoorsClosed}"
+                //    );
+                //    RoundManager.Instance.PlayAudibleNoise(
+                //        transform.position,
+                //        10f,
+                //        0.7f,
+                //        noiseIsInsideClosedShip: isInElevator && StartOfRound.Instance.hangarDoorsClosed
+                //    );
+                //}
         }
 
         /// <summary>
@@ -66,6 +163,7 @@ namespace Megaphone.Items
         public void SwitchOnOff(bool state)
         {
             isBeingUsed = state;
+            // Do stuff here
         }
     }
 }

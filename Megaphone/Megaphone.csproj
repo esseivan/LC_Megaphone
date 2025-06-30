@@ -53,20 +53,11 @@
     <PackageReference Include="LethalCompany.GameLibs.Steam" Version="*-*" PrivateAssets="all" />
     <PackageReference Include="NotAtomicBomb.TerminalApi" Version="1.5.4" />
     <PackageReference Include="Evaisa.LethalLib" Version="0.*" />
-    <PackageReference
-      Include="UnityEngine.Modules"
-      Version="2022.3.9"
-      IncludeAssets="compile"
-      PrivateAssets="all"
-    />
+    <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" PrivateAssets="all" />
     <PackageReference Include="TeamBMX.LobbyCompatibility" Version="1.*" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-    <PackageReference
-      Include="Microsoft.NETFramework.ReferenceAssemblies"
-      Version="1.0.2"
-      PrivateAssets="all"
-    />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
@@ -113,26 +104,18 @@
     <Exec Command="call copyAssets.bat" />
   </Target>
   <Target Name="NetcodePatch" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies-&gt;'&quot;%(Identity)&quot;', ' ')" />
+    <Exec Command="dotnet netcode-patch &quot;$(TargetPath)&quot; @(ReferencePathWithRefAssemblies->'&quot;%(Identity)&quot;', ' ')" />
   </Target>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Debug'">
     <Exec Command="call postbuild.bat" />
   </Target>
-  <Target
-    Name="PackThunderstore"
-    DependsOnTargets="NetcodePatch;SetPluginVersion"
-    AfterTargets="PostBuildEvent"
-    Condition="$(Configuration) == 'Release'"
-  >
+  <Target Name="PackThunderstore" DependsOnTargets="NetcodePatch;SetPluginVersion" AfterTargets="PostBuildEvent" Condition="$(Configuration) == 'Release'">
     <MakeDir Directories="$(ProjectDir)assets" Condition="!Exists('$(ProjectDir)assets')" />
     <Exec Command="dotnet tcli build --config-path $(ProjectDir)assets/thunderstore.toml --package-version $(PlainVersion)" />
     <ItemGroup>
       <FilesToRename Include="$(ProjectDir)dist/*-$(PlainVersion).zip" />
     </ItemGroup>
-    <Move
-      SourceFiles="@(FilesToRename)"
-      DestinationFiles="@(FilesToRename -&gt; Replace($(PlainVersion), $(MinVerVersion)))"
-    />
+    <Move SourceFiles="@(FilesToRename)" DestinationFiles="@(FilesToRename -&gt; Replace($(PlainVersion), $(MinVerVersion)))" />
   </Target>
   <Target Name="PublishThunderstore" DependsOnTargets="SetPluginVersion">
     <Exec Command="dotnet tcli publish --config-path $(ProjectDir)assets/thunderstore.toml --file $(ProjectDir)dist/*-$(MinVerVersion).zip" />
