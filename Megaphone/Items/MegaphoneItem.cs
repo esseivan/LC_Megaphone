@@ -75,6 +75,42 @@ namespace Megaphone.Items
             base.DiscardItem();
         }
 
+        public override void Update()
+        {
+            base.Update();
+
+            // PlayAudibleNoise every second to alert ennemies around
+
+            //// From boombox :
+            //if (!this.isPlayingMusic)
+            //    return;
+            //if ((double)this.noiseInterval <= 0.0)
+            //{
+            //    this.noiseInterval = 1f;
+            //    ++this.timesPlayedWithoutTurningOff;
+            //    this.roundManager.PlayAudibleNoise(this.transform.position, 16f, 0.9f, this.timesPlayedWithoutTurningOff, noiseID: 5);
+            //}
+            //else
+            //    this.noiseInterval -= Time.deltaTime;
+
+            // From ship horn
+            //if (this.hornBlaring)
+            //{
+            //    this.hornFar.volume = Mathf.Min(this.hornFar.volume + Time.deltaTime * 0.45f, 1f);
+            //    this.hornFar.pitch = Mathf.Lerp(this.hornFar.pitch, 0.97f, Time.deltaTime * 0.8f);
+            //    this.hornClose.volume = Mathf.Min(this.hornClose.volume + Time.deltaTime * 0.45f, 1f);
+            //    this.hornClose.pitch = Mathf.Lerp(this.hornClose.pitch, 0.97f, Time.deltaTime * 0.8f);
+            //    if ((double)this.hornClose.volume > 0.60000002384185791 && (double)this.playAudibleNoiseInterval <= 0.0)
+            //    {
+            //        this.playAudibleNoiseInterval = 1f;
+            //        RoundManager.Instance.PlayAudibleNoise(this.hornClose.transform.position, 30f, 0.8f, this.timesPlayingAtOnce, noiseID: 14155);
+            //        ++this.timesPlayingAtOnce;
+            //    }
+            //    else
+            //        this.playAudibleNoiseInterval -= Time.deltaTime;
+            //}
+        }
+
         /// <summary>
         /// Called when the user activates the object
         /// </summary>
