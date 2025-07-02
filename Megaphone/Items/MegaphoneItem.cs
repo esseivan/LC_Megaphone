@@ -8,8 +8,6 @@ namespace Megaphone.Items
 {
     public class MegaphoneItem : GrabbableObject
     {
-        public int audioMode;
-
         public override void Start()
         {
             MyLog.Logger.LogDebug("MegaphoneItem item created !");
@@ -20,7 +18,7 @@ namespace Megaphone.Items
             itemProperties.syncInteractLRFunction = true;
             itemProperties.syncDiscardFunction = true;
             itemProperties.holdButtonUse = true;
-            audioMode = 0;
+            insertedBattery.charge = 1;
         }
 
         /// <summary>
@@ -31,14 +29,8 @@ namespace Megaphone.Items
         {
             MyLog.Logger.LogDebug($"ItemInteractLeftRight({right})");
             base.ItemInteractLeftRight(right);
-            // Switch mode
-            MyLog.Logger.LogDebug($"Device used : {isBeingUsed}");
-            MyLog.Logger.LogDebug($"right/left : {(right ? "1" : "0")}");
             if (right)
                 return;
-            audioMode++;
-            audioMode = (audioMode < 3) ? audioMode : 0;
-            MyLog.Logger.LogInfo($"Switched to mode {audioMode}");
             AudioMod.SwitchFilterNextMode(this.playerHeldBy, this.isBeingUsed);
         }
 
@@ -64,6 +56,8 @@ namespace Megaphone.Items
         {
             MyLog.Logger.LogDebug($"EquipItem()");
             base.EquipItem();
+            if (this.playerHeldBy == null)
+                return;
             this.playerHeldBy.equippedUsableItemQE = true;
             AudioMod.SetupGameobjects(this.playerHeldBy);
         }

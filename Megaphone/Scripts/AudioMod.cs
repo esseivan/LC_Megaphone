@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using GameNetcodeStuff;
+using Megaphone.Patches;
 using UnityEngine;
 using static ES3Spreadsheet;
 using static Megaphone.Scripts.AudioMod;
@@ -63,16 +64,16 @@ namespace Megaphone.Scripts
             public bool Enable()
             {
                 if (active)
-                    return false;
+                    return true;
 
                 active = true;
                 switch (_mode)
                 {
                     case AudioFilteringMode.Robot:
-                        EnableRobotVoice(player);
+                        EnableRobotVoice(player, true);
                         break;
                     case AudioFilteringMode.Loud:
-                        EnableLoudVoice(player);
+                        EnableLoudVoice(player, true);
                         break;
                     case AudioFilteringMode.HighPitch:
                         return false;
@@ -88,15 +89,15 @@ namespace Megaphone.Scripts
             public bool Disable()
             {
                 if (!active)
-                    return false;
+                    return true;
 
                 switch (_mode)
                 {
                     case AudioFilteringMode.Robot:
-                        DisableRobotVoice(player);
+                        EnableRobotVoice(player, false);
                         break;
                     case AudioFilteringMode.Loud:
-                        DisableLoudVoice(player);
+                        EnableLoudVoice(player, false);
                         break;
                     case AudioFilteringMode.HighPitch:
                         return false;
@@ -221,107 +222,69 @@ namespace Megaphone.Scripts
             return filter.SwitchTo(mode, state);
         }
 
-        public static string RobotVoice(bool state, PlayerControllerB player)
+        protected static bool EnableRobotVoice(PlayerControllerB player, bool on)
         {
-            return state ? EnableRobotVoice(player) : DisableRobotVoice(player);
-        }
-
-        public static string DisableRobotVoice(PlayerControllerB player)
-        {
-            MyLog.Logger.LogInfo($"Disabling robot voice for player {player.playerUsername}");
-
-            AudioSource src = player.currentVoiceChatAudioSource;
-            if (src == null)
-                return "failed";
-
-            AudioEchoFilter echo = src.GetComponent<AudioEchoFilter>();
-            AudioHighPassFilter hp = src.GetComponent<AudioHighPassFilter>();
-            AudioChorusFilter chorus = src.GetComponent<AudioChorusFilter>();
-
-            if (echo == null)
-            {
-                MyLog.Logger.LogInfo($"AudioEchoFilter missing");
-                return "failed";
-            }
-            if (hp == null)
-            {
-                MyLog.Logger.LogInfo($"AudioHighPassFilter missing");
-                return "failed";
-            }
-            if (chorus == null)
-            {
-                MyLog.Logger.LogInfo($"AudioChorusFilter missing");
-                return "failed";
-            }
-
-            echo.enabled = false;
-            hp.enabled = false;
-            chorus.enabled = false;
-
-            SoundManager.Instance.playerVoicePitchTargets[player.playerClientId] = 1f;
-
-            return "success";
-        }
-
-        public static string EnableRobotVoice(PlayerControllerB player)
-        {
-            MyLog.Logger.LogInfo($"Enabling robot voice for player {player.playerUsername}");
-
-            AudioSource src = player.currentVoiceChatAudioSource;
-            if (src == null)
-                return "failed";
-
-            AudioEchoFilter echo = src.GetComponent<AudioEchoFilter>();
-            AudioHighPassFilter hp = src.GetComponent<AudioHighPassFilter>();
-            AudioChorusFilter chorus = src.GetComponent<AudioChorusFilter>();
-
-            if (echo == null)
-            {
-                MyLog.Logger.LogInfo($"AudioEchoFilter missing");
-                return "failed";
-            }
-            if (hp == null)
-            {
-                MyLog.Logger.LogInfo($"AudioHighPassFilter missing");
-                return "failed";
-            }
-            if (chorus == null)
-            {
-                MyLog.Logger.LogInfo($"AudioChorusFilter missing");
-                return "failed";
-            }
-
-            echo.delay = 10f;
-            echo.decayRatio = 0.75f;
-            echo.enabled = true;
-
-            hp.cutoffFrequency = 500;
-            hp.enabled = true;
-
-            chorus.dryMix = 0.75f;
-            chorus.wetMix1 = chorus.wetMix2 = 0.75f;
-            chorus.delay = 40f;
-            chorus.depth = 0.7f;
-            chorus.rate = 1.2f;
-            chorus.enabled = true;
-
-            SoundManager.Instance.playerVoicePitchTargets[player.playerClientId] = 1.2f;
-            //SoundManager.Instance.SetPlayerPitch(1.2f, (int)player.playerClientId);
-            //}
-
-            return "success";
-        }
-
-        public static bool EnableLoudVoice(PlayerControllerB player)
-        {
-            MyLog.Logger.LogInfo($"Enabling loud voice for player {player.playerUsername}");
+            MyLog.Logger.LogInfo(
+                $"{(on ? "Enabling" : "Disabling")} robot voice for player {player.playerUsername}"
+            );
 
             AudioSource src = player.currentVoiceChatAudioSource;
             if (src == null)
                 return false;
 
             AudioEchoFilter echo = src.GetComponent<AudioEchoFilter>();
-            AudioLowPassFilter lp = src.GetComponent<AudioLowPassFilter>();
+            AudioHighPassFilter hp = src.GetComponent<AudioHighPassFilter>();
+            AudioChorusFilter chorus = src.GetComponent<AudioChorusFilter>();
+
+            if (echo == null)
+            {
+                MyLog.Logger.LogInfo($"AudioEchoFilter missing");
+                return false;
+            }
+            if (hp == null)
+            {
+                MyLog.Logger.LogInfo($"AudioHighPassFilter missing");
+                return false;
+            }
+            if (chorus == null)
+            {
+                MyLog.Logger.LogInfo($"AudioChorusFilter missing");
+                return false;
+            }
+
+            if (on)
+            {
+                echo.delay = 10f;
+                echo.decayRatio = 0.75f;
+
+                hp.cutoffFrequency = 500;
+
+                chorus.dryMix = 0.75f;
+                chorus.wetMix1 = chorus.wetMix2 = 0.75f;
+                chorus.delay = 40f;
+                chorus.depth = 0.7f;
+                chorus.rate = 1.2f;
+            }
+
+            echo.enabled = hp.enabled = chorus.enabled = on;
+
+            SoundManager.Instance.playerVoicePitchTargets[player.playerClientId] = on ? 1.2f : 1f;
+
+            return true;
+        }
+
+        protected static bool EnableLoudVoice(PlayerControllerB player, bool on)
+        {
+            MyLog.Logger.LogInfo(
+                $"{(on ? "Enabling" : "Disabling")} loud voice for player {player.playerUsername}"
+            );
+
+            AudioSource src = player.currentVoiceChatAudioSource;
+            if (src == null)
+                return false;
+
+            AudioEchoFilter echo = src.GetComponent<AudioEchoFilter>();
+            OccludeAudio lp = src.GetComponent<OccludeAudio>();
             AudioHighPassFilter hp = src.GetComponent<AudioHighPassFilter>();
             AudioChorusFilter chorus = src.GetComponent<AudioChorusFilter>();
             AudioDistortionFilter dist = src.GetComponent<AudioDistortionFilter>();
@@ -333,7 +296,7 @@ namespace Megaphone.Scripts
             }
             if (lp == null)
             {
-                MyLog.Logger.LogError($"AudioLowPassFilter missing");
+                MyLog.Logger.LogError($"OccludeAudio missing");
                 return false;
             }
             if (hp == null)
@@ -355,69 +318,23 @@ namespace Megaphone.Scripts
             echo.enabled = false;
             chorus.enabled = false;
 
-            lp.cutoffFrequency = 3000f;
+            if (on)
+            {
+                hp.cutoffFrequency = 800;
 
-            hp.cutoffFrequency = 300;
-            hp.enabled = true;
+                dist.distortionLevel = 0.9f;
+            }
+            player.voiceMuffledByEnemy = true; // Necessary to prevent the game from disabling the low pass override
+            lp.overridingLowPass = on;
+            lp.lowPassOverride = on ? 3500f : 20000f; // Always enabled
+            hp.enabled = dist.enabled = on;
+            AudioPatch.EnableHighpass(player.actualClientId, on);
 
-            dist.distortionLevel = 0.5f;
-            dist.enabled = true;
+            src.maxDistance = on ? 100f : 50f; // Default is 50 ; double the distance. Ennemies too :)
 
             return true;
         }
 
-        public static bool DisableLoudVoice(PlayerControllerB player)
-        {
-            MyLog.Logger.LogInfo($"Disabling loud voice for player {player.playerUsername}");
-
-            AudioSource src = player.currentVoiceChatAudioSource;
-            if (src == null)
-                return false;
-
-            AudioEchoFilter echo = src.GetComponent<AudioEchoFilter>();
-            AudioLowPassFilter lp = src.GetComponent<AudioLowPassFilter>();
-            AudioHighPassFilter hp = src.GetComponent<AudioHighPassFilter>();
-            AudioChorusFilter chorus = src.GetComponent<AudioChorusFilter>();
-            AudioDistortionFilter dist = src.GetComponent<AudioDistortionFilter>();
-
-            if (echo == null)
-            {
-                MyLog.Logger.LogError($"AudioEchoFilter missing");
-                return false;
-            }
-            if (lp == null)
-            {
-                MyLog.Logger.LogError($"AudioLowPassFilter missing");
-                return false;
-            }
-            if (hp == null)
-            {
-                MyLog.Logger.LogError($"AudioHighPassFilter missing");
-                return false;
-            }
-            if (chorus == null)
-            {
-                MyLog.Logger.LogError($"AudioChorusFilter missing");
-                return false;
-            }
-            if (dist == null)
-            {
-                MyLog.Logger.LogError($"AudioDistortionFilter missing");
-                return false;
-            }
-
-            echo.enabled = false;
-            chorus.enabled = false;
-
-            lp.cutoffFrequency = 20000f;
-
-            hp.cutoffFrequency = 300;
-            hp.enabled = false;
-
-            dist.distortionLevel = 0.5f;
-            dist.enabled = false;
-
-            return true;
-        }
+        // UpdatePlayerVoiceEffects
     }
 }
