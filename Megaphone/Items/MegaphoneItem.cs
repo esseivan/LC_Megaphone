@@ -90,7 +90,7 @@ namespace Megaphone.Items
             MyLog.Logger.LogDebug($"EquipItem()");
             base.EquipItem();
             this.playerHeldBy.equippedUsableItemQE = true;
-            AudioMod.AddEchoEffect(this.playerHeldBy);
+            AudioMod.SetupGameobjects(this.playerHeldBy);
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Megaphone.Items
         public void SwitchOnOff(bool state)
         {
             MyLog.Logger.LogDebug($"SwitchOnOff({state})");
-            AudioMod.AddEchoEffect(this.playerHeldBy);
+            AudioMod.SetupGameobjects(this.playerHeldBy);
 
             isBeingUsed = state;
             // Do stuff here
