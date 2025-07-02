@@ -1,7 +1,7 @@
-﻿using Megaphone.Scripts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Megaphone.Scripts;
 using UnityEngine;
 
 namespace Megaphone.Items
@@ -44,7 +44,7 @@ namespace Megaphone.Items
                 // Replace audio ; Disable previous and enable current (if being used)
                 // BUT need to sync with the clients !!
                 // Therefore, required to use serverRPC and clientRPC
-                // BUT : the base is : 
+                // BUT : the base is :
                 /*
                  *    public void ItemInteractLeftRightOnClient(bool right)
                       {
@@ -67,6 +67,9 @@ namespace Megaphone.Items
             }
         }
 
+        /// <summary>
+        /// Called when the item is in the hotbar and becomes unselected
+        /// </summary>
         public override void PocketItem()
         {
             MyLog.Logger.LogDebug($"PocketItem()");
@@ -77,13 +80,22 @@ namespace Megaphone.Items
             }
             base.PocketItem();
         }
+
+        /// <summary>
+        /// Called when the item is equiped (held in hand)
+        /// This function is called on all clients
+        /// </summary>
         public override void EquipItem()
         {
             MyLog.Logger.LogDebug($"EquipItem()");
             base.EquipItem();
             this.playerHeldBy.equippedUsableItemQE = true;
+            AudioMod.AddEchoEffect(this.playerHeldBy);
         }
 
+        /// <summary>
+        /// Called when the item is dropped
+        /// </summary>
         public override void DiscardItem()
         {
             MyLog.Logger.LogDebug($"DiscardItem()");
@@ -95,7 +107,7 @@ namespace Megaphone.Items
         }
 
         /// <summary>
-        /// Used when the user activates the object
+        /// Called when the user activates the object
         /// </summary>
         /// <param name="used">State of the 'isBeingUsed' variable</param>
         /// <param name="buttonDown">Is the button currently pressed</param>
@@ -106,10 +118,12 @@ namespace Megaphone.Items
 
             if (!this.IsOwner)
             {
-                MyLog.Logger.LogInfo($"Flashlight click. playerheldby: {this.playerHeldBy}");
                 if (this.playerHeldBy != null)
                 {
-                    if (used)
+                    MyLog.Logger.LogInfo(
+                        $"Megaphone click. playerheldby: {this.playerHeldBy.name}"
+                    );
+                    if (buttonDown)
                     {
                         AudioMod.EnableRobotVoice(this.playerHeldBy);
                     }
@@ -118,10 +132,14 @@ namespace Megaphone.Items
                         AudioMod.DisableRobotVoice(this.playerHeldBy);
                     }
                 }
+                else
+                {
+                    MyLog.Logger.LogInfo($"Megaphone click. playerheldby: null");
+                }
             }
             else
             {
-                MyLog.Logger.LogInfo($"Flashlight click by owner");
+                MyLog.Logger.LogDebug($"Megaphone click by owner");
             }
 
             // Make it detectable by ennemies, do not actually play a sound
@@ -134,19 +152,19 @@ namespace Megaphone.Items
             //    MyLog.Logger.LogDebug($"\t{audio.clip.name}");
             //    audio.Play();
 
-                //    MyLog.Logger.LogDebug($"Found RoundManager {RoundManager.Instance}");
-                //    MyLog.Logger.LogDebug($"Found isInElevator {isInElevator}");
-                //    MyLog.Logger.LogDebug($"Found StartOfRound.Instance {StartOfRound.Instance}");
-                //    MyLog.Logger.LogDebug(
-                //        $"Found StartOfRound.Instance.hangarDoorsClosed {StartOfRound.Instance.hangarDoorsClosed}"
-                //    );
-                //    RoundManager.Instance.PlayAudibleNoise(
-                //        transform.position,
-                //        10f,
-                //        0.7f,
-                //        noiseIsInsideClosedShip: isInElevator && StartOfRound.Instance.hangarDoorsClosed
-                //    );
-                //}
+            //    MyLog.Logger.LogDebug($"Found RoundManager {RoundManager.Instance}");
+            //    MyLog.Logger.LogDebug($"Found isInElevator {isInElevator}");
+            //    MyLog.Logger.LogDebug($"Found StartOfRound.Instance {StartOfRound.Instance}");
+            //    MyLog.Logger.LogDebug(
+            //        $"Found StartOfRound.Instance.hangarDoorsClosed {StartOfRound.Instance.hangarDoorsClosed}"
+            //    );
+            //    RoundManager.Instance.PlayAudibleNoise(
+            //        transform.position,
+            //        10f,
+            //        0.7f,
+            //        noiseIsInsideClosedShip: isInElevator && StartOfRound.Instance.hangarDoorsClosed
+            //    );
+            //}
         }
 
         /// <summary>
@@ -169,6 +187,8 @@ namespace Megaphone.Items
         public void SwitchOnOff(bool state)
         {
             MyLog.Logger.LogDebug($"SwitchOnOff({state})");
+            AudioMod.AddEchoEffect(this.playerHeldBy);
+
             isBeingUsed = state;
             // Do stuff here
         }
