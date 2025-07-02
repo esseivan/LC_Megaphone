@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Megaphone.Scripts
 {
-    internal class AudioMod
+    public class AudioMod
     {
         protected static List<ulong> setupPlayersID = new List<ulong>();
 
@@ -24,7 +24,7 @@ namespace Megaphone.Scripts
             }
         }
 
-        public static bool AddEchoEffect(PlayerControllerB player)
+        public static bool SetupGameobjects(PlayerControllerB player)
         {
             if (setupPlayersID.Contains(player.playerClientId))
             {
@@ -81,10 +81,13 @@ namespace Megaphone.Scripts
             return true;
         }
 
+        public static string RobotVoice(bool state, PlayerControllerB player)
+        {
+            return state ? EnableRobotVoice(player) : DisableRobotVoice(player);
+        }
+
         public static string DisableRobotVoice(PlayerControllerB player)
         {
-            //AddEchoEffect(player);
-
             //foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
             //{
             MyLog.Logger.LogInfo($"Disabling robot voice for player {player.playerUsername}");
@@ -132,8 +135,6 @@ namespace Megaphone.Scripts
 
         public static string EnableRobotVoice(PlayerControllerB player)
         {
-            //AddEchoEffect(player);
-
             //foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
             //{
             MyLog.Logger.LogInfo($"Enabling robot voice for player {player.playerUsername}");
