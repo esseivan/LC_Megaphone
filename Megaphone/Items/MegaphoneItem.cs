@@ -39,32 +39,7 @@ namespace Megaphone.Items
             audioMode++;
             audioMode = (audioMode < 3) ? audioMode : 0;
             MyLog.Logger.LogInfo($"Switched to mode {audioMode}");
-            if (this.isBeingUsed)
-            {
-                // Replace audio ; Disable previous and enable current (if being used)
-                // BUT need to sync with the clients !!
-                // Therefore, required to use serverRPC and clientRPC
-                // BUT : the base is :
-                /*
-                 *    public void ItemInteractLeftRightOnClient(bool right)
-                      {
-                        if (!this.IsOwner)
-                        {
-                          Debug.Log((object) "InteractLeftRight was called but player was not the owner.");
-                        }
-                        else
-                        {
-                          if (this.RequireCooldown() || !this.UseItemBatteries(true))
-                            return;
-                          this.ItemInteractLeftRight(right);
-                          if (!this.itemProperties.syncInteractLRFunction)
-                            return;
-                          ++this.isSendingItemRPC;
-                          this.InteractLeftRightServerRpc(right);
-                        }
-                      }
-                 */
-            }
+            AudioMod.SwitchFilterNextMode(this.playerHeldBy, this.isBeingUsed);
         }
 
         /// <summary>
@@ -123,14 +98,7 @@ namespace Megaphone.Items
                     MyLog.Logger.LogInfo(
                         $"Megaphone click. playerheldby: {this.playerHeldBy.name}"
                     );
-                    if (buttonDown)
-                    {
-                        AudioMod.EnableRobotVoice(this.playerHeldBy);
-                    }
-                    else
-                    {
-                        AudioMod.DisableRobotVoice(this.playerHeldBy);
-                    }
+                    AudioMod.SwitchFilterOnOff(this.playerHeldBy, buttonDown);
                 }
                 else
                 {
