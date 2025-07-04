@@ -117,6 +117,10 @@ public class Plugin : BaseUnityPlugin
                 iPrice
             );
         }
+        else
+        {
+            LethalLib.Modules.Items.RegisterItem(megaphoneItem);
+        }
     }
 
     private static void LoadAssets()
