@@ -37,6 +37,7 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<bool> configIsScrap;
     public static ConfigEntry<int> configRarity;
     public static ConfigEntry<int> configPrice;
+    public static ConfigEntry<float> configHearDistance;
 
     public static AssetBundle Assets;
     public static AssetBundle Assets_network;
@@ -60,6 +61,13 @@ public class Plugin : BaseUnityPlugin
         );
 
         configPrice = Config.Bind("Item", "Price", 15, "Buy cost of the item");
+
+        configHearDistance = Config.Bind(
+            "Audio",
+            "Hearing distance modifier",
+            2.0f,
+            "Change the distance multiplier the voices can be heard from when talking in 'loud mode' (switch with Q)."
+        );
     }
 
     private void Awake()

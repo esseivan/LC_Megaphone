@@ -330,7 +330,10 @@ namespace Megaphone.Scripts
             hp.enabled = dist.enabled = on;
             AudioPatch.EnableHighpass(player.actualClientId, on);
 
-            src.maxDistance = on ? 100f : 50f; // Default is 50 ; double the distance. Ennemies too :)
+            float modifier = Plugin.configHearDistance.Value;
+            if (modifier <= 0)
+                modifier = 1.0f;
+            src.maxDistance = on ? (modifier * 50) : 50f; // Default is 50 ; double the distance. Ennemies too :)
 
             return true;
         }
