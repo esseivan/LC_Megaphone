@@ -19,6 +19,8 @@ namespace Megaphone.Items
             itemProperties.syncDiscardFunction = true;
             itemProperties.holdButtonUse = true;
             insertedBattery.charge = 1;
+            itemProperties.positionOffset = new Vector3(0.08f, 0.2f, -0.1f);
+            itemProperties.rotationOffset = new Vector3(-90, 180, 38);
         }
 
         /// <summary>
