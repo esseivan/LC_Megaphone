@@ -8,8 +8,6 @@ namespace Megaphone.Items
 {
     public class MegaphoneItem : GrabbableObject
     {
-        public int audioMode;
-
         public override void Start()
         {
             MyLog.Logger.LogDebug("MegaphoneItem item created !");
@@ -20,7 +18,9 @@ namespace Megaphone.Items
             itemProperties.syncInteractLRFunction = true;
             itemProperties.syncDiscardFunction = true;
             itemProperties.holdButtonUse = true;
-            audioMode = 0;
+            insertedBattery.charge = 1;
+            itemProperties.positionOffset = new Vector3(0.08f, 0.2f, -0.1f);
+            itemProperties.rotationOffset = new Vector3(-90, 180, 38);
         }
 
         /// <summary>
@@ -31,40 +31,9 @@ namespace Megaphone.Items
         {
             MyLog.Logger.LogDebug($"ItemInteractLeftRight({right})");
             base.ItemInteractLeftRight(right);
-            // Switch mode
-            MyLog.Logger.LogDebug($"Device used : {isBeingUsed}");
-            MyLog.Logger.LogDebug($"right/left : {(right ? "1" : "0")}");
             if (right)
                 return;
-            audioMode++;
-            audioMode = (audioMode < 3) ? audioMode : 0;
-            MyLog.Logger.LogInfo($"Switched to mode {audioMode}");
-            if (this.isBeingUsed)
-            {
-                // Replace audio ; Disable previous and enable current (if being used)
-                // BUT need to sync with the clients !!
-                // Therefore, required to use serverRPC and clientRPC
-                // BUT : the base is :
-                /*
-                 *    public void ItemInteractLeftRightOnClient(bool right)
-                      {
-                        if (!this.IsOwner)
-                        {
-                          Debug.Log((object) "InteractLeftRight was called but player was not the owner.");
-                        }
-                        else
-                        {
-                          if (this.RequireCooldown() || !this.UseItemBatteries(true))
-                            return;
-                          this.ItemInteractLeftRight(right);
-                          if (!this.itemProperties.syncInteractLRFunction)
-                            return;
-                          ++this.isSendingItemRPC;
-                          this.InteractLeftRightServerRpc(right);
-                        }
-                      }
-                 */
-            }
+            AudioMod.SwitchFilterNextMode(this.playerHeldBy, this.isBeingUsed);
         }
 
         /// <summary>
@@ -89,6 +58,8 @@ namespace Megaphone.Items
         {
             MyLog.Logger.LogDebug($"EquipItem()");
             base.EquipItem();
+            if (this.playerHeldBy == null)
+                return;
             this.playerHeldBy.equippedUsableItemQE = true;
             AudioMod.SetupGameobjects(this.playerHeldBy);
         }
@@ -104,6 +75,42 @@ namespace Megaphone.Items
             //    this.BroadcastSFXFromWalkieTalkie(this.playerDieOnWalkieTalkieSFX, (int)this.playerHeldBy.playerClientId);
             this.playerHeldBy.equippedUsableItemQE = false;
             base.DiscardItem();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            // PlayAudibleNoise every second to alert ennemies around
+
+            //// From boombox :
+            //if (!this.isPlayingMusic)
+            //    return;
+            //if ((double)this.noiseInterval <= 0.0)
+            //{
+            //    this.noiseInterval = 1f;
+            //    ++this.timesPlayedWithoutTurningOff;
+            //    this.roundManager.PlayAudibleNoise(this.transform.position, 16f, 0.9f, this.timesPlayedWithoutTurningOff, noiseID: 5);
+            //}
+            //else
+            //    this.noiseInterval -= Time.deltaTime;
+
+            // From ship horn
+            //if (this.hornBlaring)
+            //{
+            //    this.hornFar.volume = Mathf.Min(this.hornFar.volume + Time.deltaTime * 0.45f, 1f);
+            //    this.hornFar.pitch = Mathf.Lerp(this.hornFar.pitch, 0.97f, Time.deltaTime * 0.8f);
+            //    this.hornClose.volume = Mathf.Min(this.hornClose.volume + Time.deltaTime * 0.45f, 1f);
+            //    this.hornClose.pitch = Mathf.Lerp(this.hornClose.pitch, 0.97f, Time.deltaTime * 0.8f);
+            //    if ((double)this.hornClose.volume > 0.60000002384185791 && (double)this.playAudibleNoiseInterval <= 0.0)
+            //    {
+            //        this.playAudibleNoiseInterval = 1f;
+            //        RoundManager.Instance.PlayAudibleNoise(this.hornClose.transform.position, 30f, 0.8f, this.timesPlayingAtOnce, noiseID: 14155);
+            //        ++this.timesPlayingAtOnce;
+            //    }
+            //    else
+            //        this.playAudibleNoiseInterval -= Time.deltaTime;
+            //}
         }
 
         /// <summary>
@@ -123,14 +130,7 @@ namespace Megaphone.Items
                     MyLog.Logger.LogInfo(
                         $"Megaphone click. playerheldby: {this.playerHeldBy.name}"
                     );
-                    if (buttonDown)
-                    {
-                        AudioMod.EnableRobotVoice(this.playerHeldBy);
-                    }
-                    else
-                    {
-                        AudioMod.DisableRobotVoice(this.playerHeldBy);
-                    }
+                    AudioMod.SwitchFilterOnOff(this.playerHeldBy, buttonDown);
                 }
                 else
                 {

@@ -17,7 +17,7 @@ public class NetworkObjectManager
         networkPrefab.AddComponent<ExampleNetworkHandler>();
 
         NetworkManager.Singleton.AddNetworkPrefab(networkPrefab);
-        MyLog.Logger.LogError("ExampleNetworkHandler successfully added");
+        MyLog.Logger.LogDebug("ExampleNetworkHandler successfully added");
     }
 
     [HarmonyPostfix, HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.Awake))]
@@ -31,7 +31,7 @@ public class NetworkObjectManager
                 Quaternion.identity
             );
             networkHandlerHost.GetComponent<NetworkObject>().Spawn();
-            MyLog.Logger.LogError("NetworkObject successfully spawned");
+            MyLog.Logger.LogDebug("NetworkObject successfully spawned");
         }
     }
 

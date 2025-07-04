@@ -12,7 +12,7 @@ internal class NetworkTest
     [HarmonyPostfix, HarmonyPatch(typeof(RoundManager), nameof(RoundManager.GenerateNewFloor))]
     static void SubscribeToHandler()
     {
-        MyLog.Logger.LogError("SubscribeToHandler() called");
+        MyLog.Logger.LogDebug("SubscribeToHandler() called");
         ExampleNetworkHandler.LevelEvent += ReceivedEventFromServer;
     }
 
@@ -22,14 +22,14 @@ internal class NetworkTest
     ]
     static void UnsubscribeFromHandler()
     {
-        MyLog.Logger.LogError("UnsubscribeFromHandler() called");
+        MyLog.Logger.LogDebug("UnsubscribeFromHandler() called");
         ExampleNetworkHandler.LevelEvent -= ReceivedEventFromServer;
     }
 
     static void ReceivedEventFromServer(string eventName)
     {
         // Event Code Here
-        MyLog.Logger.LogError("Successfully received RPC");
+        MyLog.Logger.LogDebug("Successfully received RPC");
     }
 
     public static void SendEventToClients(string eventName)
@@ -37,7 +37,7 @@ internal class NetworkTest
         if (!(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
             return;
 
-        MyLog.Logger.LogError("Sending RPC...");
+        MyLog.Logger.LogDebug("Sending RPC...");
         ExampleNetworkHandler.Instance.EventClientRpc(eventName);
     }
 }

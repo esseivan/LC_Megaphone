@@ -9,7 +9,7 @@ public class ExampleNetworkHandler : NetworkBehaviour
 {
     public override void OnNetworkSpawn()
     {
-        MyLog.Logger.LogError("OnNetworkSpawn() called");
+        MyLog.Logger.LogDebug("OnNetworkSpawn() called");
         LevelEvent = null;
 
         if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
@@ -22,8 +22,8 @@ public class ExampleNetworkHandler : NetworkBehaviour
     [ClientRpc]
     public void EventClientRpc(string eventName)
     {
-        MyLog.Logger.LogError("EventClientRpc() called");
-        MyLog.Logger.LogError($"LevelEvent is {(LevelEvent == null ? "NULL" : "Not null")}");
+        MyLog.Logger.LogDebug("EventClientRpc() called");
+        MyLog.Logger.LogDebug($"LevelEvent is {(LevelEvent == null ? "NULL" : "Not null")}");
         LevelEvent?.Invoke(eventName);
     }
 
