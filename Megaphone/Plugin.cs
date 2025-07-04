@@ -33,27 +33,33 @@ public class Plugin : BaseUnityPlugin
     internal static new ManualLogSource Logger { get; private set; } = null!;
     internal static Harmony Harmony { get; set; }
 
-    public static ConfigEntry<string> configGreeting;
-    public static ConfigEntry<bool> configDisplayGreeting;
+    public static ConfigEntry<bool> configCanBuy;
+    public static ConfigEntry<bool> configIsScrap;
+    public static ConfigEntry<int> configRarity;
+    public static ConfigEntry<int> configPrice;
 
     public static AssetBundle Assets;
     public static AssetBundle Assets_network;
 
     private void SetupConfigBinds()
     {
-        configGreeting = Config.Bind(
-            "General", // The section under which the option is shown
-            "GreetingText", // The key of the configuration option in the configuration file
-            "Hello, world!", // The default value
-            "A greeting text to show when the game is launched"
-        ); // Description of the option to show in the config file
-
-        configDisplayGreeting = Config.Bind(
-            "General.Toggles",
-            "DisplayGreeting",
+        configCanBuy = Config.Bind(
+            "Item",
+            "CanBuy",
             true,
-            "Whether or not to show the greeting text"
+            "Can the item be bought from the terminal"
         );
+
+        configIsScrap = Config.Bind("Item", "IsScrap", true, "Can the item spawn in interiors");
+
+        configRarity = Config.Bind(
+            "Item",
+            "Rarity",
+            100,
+            "Rarity of the object. 0 is never, 100 is often"
+        );
+
+        configPrice = Config.Bind("Item", "Price", 15, "Buy cost of the item");
     }
 
     private void Awake()
@@ -71,16 +77,13 @@ public class Plugin : BaseUnityPlugin
 
         CreateItems();
 
-        if (configDisplayGreeting.Value)
-            Logger.LogDebug(configGreeting.Value);
-
         Logger.LogInfo($"{MyPluginInfo.PLUGIN_GUID} v{MyPluginInfo.PLUGIN_VERSION} has loaded!");
     }
 
     private static void CreateItems()
     {
-        int iPrice = 15;
-        int iRarity = 100;
+        int iPrice = configPrice.Value;
+        int iRarity = configRarity.Value;
         Item megaphoneItem = Assets.LoadAsset<Item>(ASSET_PATH_MEGAPHONE_ITEM);
         Logger.LogDebug($"Found item {megaphoneItem.itemName}");
         GrabbableObject script = megaphoneItem.spawnPrefab.AddComponent<MegaphoneItem>();
@@ -93,14 +96,27 @@ public class Plugin : BaseUnityPlugin
         MyLog.Logger.LogDebug($"Found item '{megaphoneItem.itemName}'");
 
         LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(megaphoneItem.spawnPrefab);
-        LethalLib.Modules.Items.RegisterScrap(
-            megaphoneItem,
-            iRarity,
-            LethalLib.Modules.Levels.LevelTypes.All
-        );
 
-        TerminalNode iTerminalNode = Assets.LoadAsset<TerminalNode>(ASSET_PATH_MEGAPHONE_TNODE);
-        LethalLib.Modules.Items.RegisterShopItem(megaphoneItem, null, null, iTerminalNode, iPrice);
+        if (configIsScrap.Value)
+        {
+            LethalLib.Modules.Items.RegisterScrap(
+                megaphoneItem,
+                iRarity,
+                LethalLib.Modules.Levels.LevelTypes.All
+            );
+        }
+
+        if (configCanBuy.Value)
+        {
+            TerminalNode iTerminalNode = Assets.LoadAsset<TerminalNode>(ASSET_PATH_MEGAPHONE_TNODE);
+            LethalLib.Modules.Items.RegisterShopItem(
+                megaphoneItem,
+                null,
+                null,
+                iTerminalNode,
+                iPrice
+            );
+        }
     }
 
     private static void LoadAssets()
