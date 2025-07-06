@@ -25,6 +25,8 @@ namespace Megaphone;
 public class Plugin : BaseUnityPlugin
 {
     public const string ASSET_PATH_MEGAPHONE_ITEM = "Assets/Megaphone/MegaphoneItem.asset";
+    public const string ASSET_PATH_MEGAPHONE_SFX = "Assets/Megaphone/sfx.mp3";
+    public const string ASSET_PATH_MEGAPHONE_SIREN = "Assets/Megaphone/siren.mp3";
     public const string ASSET_PATH_MEGAPHONE_TNODE =
         "Assets/Megaphone/iTerminalNodeMegaphone.asset";
     public const string ASSET_PATH_NET_HANDLER = "Assets/Network/ExampleNetworkHandler.prefab";
@@ -166,6 +168,8 @@ public class Plugin : BaseUnityPlugin
         {
             Logger.LogDebug($"{name}");
         }
+
+        AudioMod.LoadAssets();
     }
 
     private static void CreateTerminalCommands()

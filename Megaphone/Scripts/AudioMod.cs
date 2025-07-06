@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using GameNetcodeStuff;
+using Megaphone.Items;
 using Megaphone.Patches;
 using UnityEngine;
 
@@ -15,6 +16,15 @@ public partial class AudioMod
     /// List of players ID whose setup is done
     /// </summary>
     protected static List<ulong> setupPlayersID = new List<ulong>();
+
+    protected static AudioClip sfx,
+        siren;
+
+    public static void LoadAssets()
+    {
+        sfx = Plugin.Assets.LoadAsset<AudioClip>(Plugin.ASSET_PATH_MEGAPHONE_SFX);
+        siren = Plugin.Assets.LoadAsset<AudioClip>(Plugin.ASSET_PATH_MEGAPHONE_SIREN);
+    }
 
     /// <summary>
     /// Indicate that a new player joined.
@@ -243,6 +253,27 @@ public partial class AudioMod
         if (modifier <= 0)
             modifier = 1.0f;
         src.maxDistance = on ? (modifier * 50) : 50f; // Default is 50 ; double the distance. Ennemies too :)
+
+        return true;
+    }
+
+    internal static bool PlaySFX(PlayerControllerB player, MegaphoneItem item)
+    {
+        if (sfx == null)
+        {
+            MyLog.Logger.LogError("SFX is null");
+            return false;
+        }
+        MyLog.Logger.LogDebug("Playing SFX...");
+
+        AudioSource src = item.GetComponent<AudioSource>();
+        if (src == null)
+        {
+            MyLog.Logger.LogError("No AudioSource to play SFX...");
+            return false;
+        }
+
+        src.PlayOneShot(sfx);
 
         return true;
     }

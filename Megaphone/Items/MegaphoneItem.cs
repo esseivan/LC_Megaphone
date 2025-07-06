@@ -60,11 +60,8 @@ namespace Megaphone.Items
             MyLog.Logger.LogDebug($"PocketItem()");
             if (this.playerHeldBy != null)
             {
-                if (this.IsOwner)
-                {
-                    this.playerHeldBy.equippedUsableItemQE = false;
-                    this.isBeingUsed = false;
-                }
+                this.playerHeldBy.equippedUsableItemQE = false;
+                this.isBeingUsed = false;
                 audioFiltering.Disable();
             }
             base.PocketItem();
@@ -89,10 +86,8 @@ namespace Megaphone.Items
                 return;
             }
 
-            if (this.IsOwner)
-            {
-                this.playerHeldBy.equippedUsableItemQE = true;
-            }
+            this.playerHeldBy.equippedUsableItemQE = true;
+
             AudioMod.SetupGameobjects(this.playerHeldBy);
 
             if (!isSynced)
@@ -142,10 +137,13 @@ namespace Megaphone.Items
             // Play sound on death
             //if (this.playerHeldBy.isPlayerDead && this.clientIsHoldingAndSpeakingIntoThis)
             //    this.BroadcastSFXFromWalkieTalkie(this.playerDieOnWalkieTalkieSFX, (int)this.playerHeldBy.playerClientId);
-            if (this.IsOwner)
+            this.playerHeldBy.equippedUsableItemQE = false;
+
+            if (this.playerHeldBy.isPlayerDead && this.isBeingUsed)
             {
-                this.playerHeldBy.equippedUsableItemQE = false;
+                AudioMod.PlaySFX(this.playerHeldBy, this);
             }
+
             base.DiscardItem();
         }
 
