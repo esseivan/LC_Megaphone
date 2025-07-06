@@ -4,8 +4,7 @@ public enum AudioFilteringMode
 {
     Robot,
     Loud,
-
-    //HighPitch,
-    //LowPitch,
+    HighPitch,
+    LowPitch,
     Siren,
 }

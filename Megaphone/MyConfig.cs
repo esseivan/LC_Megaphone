@@ -39,11 +39,31 @@ public class MyConfig
             return x;
         }
     }
+    public static float SFXHearDistance
+    {
+        get
+        {
+            float x = configSFXHearDistance.Value;
+            if (x <= 0)
+                x = 1.0f;
+            return x;
+        }
+    }
     public static float LoudVoiceVolume
     {
         get
         {
             float x = configLoudVoiceVolume.Value;
+            x = MathF.Min(1.2f, x); // Cap at 1.2
+            x = MathF.Max(0.0f, x);
+            return x;
+        }
+    }
+    public static float SFXVolume
+    {
+        get
+        {
+            float x = configSFXVolume.Value;
             x = MathF.Min(1.2f, x); // Cap at 1.2
             x = MathF.Max(0.0f, x);
             return x;
@@ -60,15 +80,16 @@ public class MyConfig
         }
     }
 
-    protected static ConfigEntry<bool> configCanBuy;
-    protected static ConfigEntry<bool> configIsScrap;
-    protected static ConfigEntry<int> configRarity;
-    protected static ConfigEntry<int> configPrice;
-    protected static ConfigEntry<float> configHearDistance;
-    protected static ConfigEntry<float> configSirenHearDistance;
-    protected static ConfigEntry<float> configSFXHearDistance;
-    protected static ConfigEntry<float> configLoudVoiceVolume;
-    protected static ConfigEntry<float> configRobotVoicePitch;
+    private static ConfigEntry<bool> configCanBuy;
+    private static ConfigEntry<bool> configIsScrap;
+    private static ConfigEntry<int> configRarity;
+    private static ConfigEntry<int> configPrice;
+    private static ConfigEntry<float> configHearDistance;
+    private static ConfigEntry<float> configSirenHearDistance;
+    private static ConfigEntry<float> configSFXHearDistance;
+    private static ConfigEntry<float> configLoudVoiceVolume;
+    private static ConfigEntry<float> configSFXVolume;
+    private static ConfigEntry<float> configRobotVoicePitch;
 
     public static void Setup(BaseUnityPlugin p)
     {
@@ -93,6 +114,7 @@ public class MyConfig
             "Rarity",
             100,
             @"Rarity of the object. 0 is never, 100 is often.
+Min: 0      Max: 100
 [Host side]"
         );
 
@@ -110,6 +132,7 @@ public class MyConfig
             2.0f,
             @"Change the distance multiplier the voices can be heard from when talking in
 'loud mode' (switch with Q).
+Min: 0.0
 [Client side]"
         );
 
@@ -118,6 +141,7 @@ public class MyConfig
             "SirenHearingDistanceModifier",
             2.25f,
             @"Change the distance multiplier the siren can be heard from (switch with Q).
+Min: 0.0
 [Client side]"
         );
 
@@ -126,6 +150,7 @@ public class MyConfig
             "SFXHearingDistanceModifier",
             2.5f,
             @"Change the distance multiplier the SFX can be heard from.
+Min: 0.0
 [Client side]"
         );
 
@@ -135,6 +160,15 @@ public class MyConfig
             0.9f,
             @"Volume multiplier of the 'Loud voice' filter. Recommended below 1.0 because
 the distortion increases the volume, 1.0 is already higher than normal voice.
+Min: 0.0    Max: 1.2
+[Client side]"
+        );
+
+        configSFXVolume = p.Config.Bind(
+            "Audio.Volume",
+            "SFXVolume",
+            1.0f,
+            @"Volume multiplier of the SFX sounds.
 Min: 0.0    Max: 1.2
 [Client side]"
         );

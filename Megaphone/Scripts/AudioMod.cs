@@ -217,7 +217,7 @@ public partial class AudioMod
 
         echo.enabled = hp.enabled = chorus.enabled = on;
 
-        SoundManager.Instance.playerVoicePitchTargets[player.playerClientId] = on ? 1.2f : 1f;
+        AudioPatch.playersPitchTargets[player.playerClientId] = on ? MyConfig.RobotVoicePitch : -1; // -1 : skip override
 
         return true;
     }
@@ -245,20 +245,36 @@ public partial class AudioMod
         {
             hp.cutoffFrequency = 800;
 
-            dist.distortionLevel = 0.9f;
+            dist.distortionLevel = 0.9f; // High distortion increases volume. Decrease a bit
         }
+        src.volume = on ? MyConfig.LoudVoiceVolume : 1;
         player.voiceMuffledByEnemy = true; // Necessary to prevent the game from disabling the low pass override
         lp.overridingLowPass = on;
         lp.lowPassOverride = on ? 3500f : 20000f; // Always enabled
         hp.enabled = dist.enabled = on;
         AudioPatch.EnableHighpass(player.actualClientId, on);
 
-        float modifier = Plugin.configHearDistance.Value;
-        if (modifier <= 0)
-            modifier = 1.0f;
-        src.maxDistance = on ? (modifier * 50) : 50f; // Default is 50 ; double the distance. Ennemies too :)
+        src.maxDistance = on ? (MyConfig.HearDistance * 50) : 50f; // Default is 50 ; double the distance. Ennemies too :)
 
         return true;
+    }
+
+    internal static void EnableHighPitch(PlayerControllerB player, bool on)
+    {
+        MyLog.Logger.LogInfo(
+            $"{(on ? "Enabling" : "Disabling")} high pitch voice for player {player.playerUsername}"
+        );
+
+        AudioPatch.playersPitchTargets[player.playerClientId] = on ? 2 : -1; // -1 : skip override
+    }
+
+    internal static void EnableLowPitch(PlayerControllerB player, bool on)
+    {
+        MyLog.Logger.LogInfo(
+            $"{(on ? "Enabling" : "Disabling")} low pitch voice for player {player.playerUsername}"
+        );
+
+        AudioPatch.playersPitchTargets[player.playerClientId] = on ? 0.5f : -1; // -1 : skip override
     }
 
     internal static bool PlaySFX(MegaphoneItem item, AudioClip sound)
@@ -277,11 +293,8 @@ public partial class AudioMod
             return false;
         }
 
-        float modifier = Plugin.configHearDistance.Value;
-        if (modifier <= 0)
-            modifier = 1.0f;
-        src.maxDistance = (modifier * 50);
-        src.volume = 0.8f;
+        src.maxDistance = MyConfig.SFXHearDistance * 50;
+        src.volume = MyConfig.SFXVolume;
         src.PlayOneShot(sound);
 
         return true;

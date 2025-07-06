@@ -91,6 +91,12 @@ public class AudioFiltering
             case AudioFilteringMode.Loud:
                 AudioMod.EnableLoudVoice(player, true);
                 break;
+            case AudioFilteringMode.HighPitch:
+                AudioMod.EnableHighPitch(player, true);
+                break;
+            case AudioFilteringMode.LowPitch:
+                AudioMod.EnableLowPitch(player, true);
+                break;
             case AudioFilteringMode.Siren:
                 AudioMod.PlaySFX(parent, AudioMod.Siren);
                 break;
@@ -122,6 +128,12 @@ public class AudioFiltering
                 break;
             case AudioFilteringMode.Loud:
                 AudioMod.EnableLoudVoice(player, false);
+                break;
+            case AudioFilteringMode.HighPitch:
+                AudioMod.EnableHighPitch(player, false);
+                break;
+            case AudioFilteringMode.LowPitch:
+                AudioMod.EnableLowPitch(player, false);
                 break;
             case AudioFilteringMode.Siren:
                 AudioMod.StopSFX(parent);
