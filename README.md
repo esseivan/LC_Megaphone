@@ -5,11 +5,13 @@ It can be purchased in the store if enabled in the configuration.
 
 ## Usage
 
-The item can be bought or found as a scrap (configurable).
-Use 'Q' to change the filter mode.
-Currently 2 mode :
+The item can be bought or found as a scrap (configurable).  
+Use 'Q' to change the filter mode.  
+Currently 5 modes are available :
 - Robot voice
 - Loud voice : Can be heard from far away (distance configurable)
+- Low and High pitch
+- Siren : Good to lure enemies. Use with care
 
 ## Third-Party Code and Credits
 
