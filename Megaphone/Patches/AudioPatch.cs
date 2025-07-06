@@ -56,6 +56,10 @@ public class AudioPatch
             AudioSource voiceChatAudioSource = __instance
                 .allPlayerScripts[i]
                 .currentVoiceChatAudioSource;
+            if (voiceChatAudioSource == null)
+            {
+                MyLog.Logger.LogError("voiceChatAudioSource is null...");
+            }
             voiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = true;
         }
     }

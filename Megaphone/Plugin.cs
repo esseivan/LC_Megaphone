@@ -48,25 +48,30 @@ public class Plugin : BaseUnityPlugin
             "Item",
             "CanBuy",
             true,
-            "Can the item be bought from the terminal"
+            "Can the item be bought from the terminal. [Client side]"
         );
 
-        configIsScrap = Config.Bind("Item", "IsScrap", true, "Can the item spawn in interiors");
+        configIsScrap = Config.Bind(
+            "Item",
+            "IsScrap",
+            true,
+            "Can the item spawn in interiors. [Host side]"
+        );
 
         configRarity = Config.Bind(
             "Item",
             "Rarity",
             100,
-            "Rarity of the object. 0 is never, 100 is often"
+            "Rarity of the object. 0 is never, 100 is often. [Host side]"
         );
 
-        configPrice = Config.Bind("Item", "Price", 15, "Buy cost of the item");
+        configPrice = Config.Bind("Item", "Price", 15, "Buy cost of the item. [Client side]");
 
         configHearDistance = Config.Bind(
             "Audio",
-            "Hearing distance modifier",
+            "HearingDistanceModifier",
             2.0f,
-            "Change the distance multiplier the voices can be heard from when talking in 'loud mode' (switch with Q)."
+            "Change the distance multiplier the voices can be heard from when talking in 'loud mode' (switch with Q). [Client side]"
         );
     }
 
