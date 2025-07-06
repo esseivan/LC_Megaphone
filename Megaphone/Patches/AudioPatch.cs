@@ -5,7 +5,6 @@ using GameNetcodeStuff;
 using HarmonyLib;
 using Megaphone.Scripts;
 using UnityEngine;
-using static ES3Spreadsheet;
 
 namespace Megaphone.Patches;
 
@@ -13,6 +12,8 @@ namespace Megaphone.Patches;
 public class AudioPatch
 {
     public static List<ulong> EnableHighPassIndexes = new List<ulong>();
+
+    public static Dictionary<ulong, float> playersPitchTargets = new Dictionary<ulong, float>();
 
     public static void EnableHighpass(ulong index, bool on)
     {
@@ -62,5 +63,26 @@ public class AudioPatch
             }
             voiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = true;
         }
+    }
+
+    [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.Update))]
+    [HarmonyPostfix]
+    private static void PlayerControllerBUpdatePostFix(PlayerControllerB __instance)
+    {
+        if (__instance == null)
+            return;
+
+        ulong clientId = __instance.playerClientId;
+        if (!playersPitchTargets.ContainsKey(clientId))
+            return;
+
+        float targetPitch = playersPitchTargets[clientId];
+
+        if (targetPitch < 0.5f || targetPitch > 2.0f || targetPitch == 1.0f)
+            return;
+
+        MyLog.Logger.LogDebug($"Overwriting pitch for {clientId} to {targetPitch}");
+
+        SoundManager.Instance.playerVoicePitchTargets[clientId] = targetPitch;
     }
 }
