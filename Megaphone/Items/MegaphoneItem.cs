@@ -2,12 +2,23 @@
 using System.Collections.Generic;
 using System.Text;
 using Megaphone.Scripts;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Megaphone.Items
 {
     public class MegaphoneItem : GrabbableObject
     {
+        public AudioFiltering audioFiltering;
+        protected bool isSynced;
+
+        public override void OnNetworkSpawn()
+        {
+            MyLog.Logger.LogDebug("OnNetworkSpawn() called");
+
+            base.OnNetworkSpawn();
+        }
+
         public override void Start()
         {
             MyLog.Logger.LogDebug("MegaphoneItem item created !");
@@ -21,6 +32,11 @@ namespace Megaphone.Items
             insertedBattery.charge = 1;
             itemProperties.positionOffset = new Vector3(0.08f, 0.2f, -0.1f);
             itemProperties.rotationOffset = new Vector3(-90, 180, 38);
+
+            this.audioFiltering = new AudioFiltering();
+
+            // Server is always in sync
+            this.isSynced = (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer);
         }
 
         /// <summary>
@@ -29,11 +45,11 @@ namespace Megaphone.Items
         /// <param name="right">True if 'E', false if 'Q'</param>
         public override void ItemInteractLeftRight(bool right)
         {
-            MyLog.Logger.LogDebug($"ItemInteractLeftRight({right})");
             base.ItemInteractLeftRight(right);
             if (right)
                 return;
-            AudioMod.SwitchFilterNextMode(this.playerHeldBy, this.isBeingUsed);
+
+            audioFiltering.NextFilterMode(this.isBeingUsed);
         }
 
         /// <summary>
@@ -42,10 +58,14 @@ namespace Megaphone.Items
         public override void PocketItem()
         {
             MyLog.Logger.LogDebug($"PocketItem()");
-            if (this.IsOwner && this.playerHeldBy != null)
+            if (this.playerHeldBy != null)
             {
-                this.playerHeldBy.equippedUsableItemQE = false;
-                this.isBeingUsed = false;
+                if (this.IsOwner)
+                {
+                    this.playerHeldBy.equippedUsableItemQE = false;
+                    this.isBeingUsed = false;
+                }
+                audioFiltering.Disable();
             }
             base.PocketItem();
         }
@@ -56,12 +76,61 @@ namespace Megaphone.Items
         /// </summary>
         public override void EquipItem()
         {
-            MyLog.Logger.LogDebug($"EquipItem()");
+            MyLog.Logger.LogDebug($"Equipped");
+
             base.EquipItem();
+
+            audioFiltering.player = this.playerHeldBy;
             if (this.playerHeldBy == null)
+            {
+                MyLog.Logger.LogWarning(
+                    $"Unable to continue, player is null... Owner must re-equip the item"
+                );
                 return;
-            this.playerHeldBy.equippedUsableItemQE = true;
+            }
+
+            if (this.IsOwner)
+            {
+                this.playerHeldBy.equippedUsableItemQE = true;
+            }
             AudioMod.SetupGameobjects(this.playerHeldBy);
+
+            if (!isSynced)
+            {
+                MyLog.Logger.LogDebug($"Syncing mode...");
+                SyncAudioModeToClientsServerRpc();
+            }
+        }
+
+        /// <summary>
+        /// Sync the audio filtering mode to all the clients
+        /// </summary>
+        [ServerRpc(RequireOwnership = false)]
+        public void SyncAudioModeToClientsServerRpc()
+        {
+            if (!(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
+                return;
+
+            MyLog.Logger.LogDebug($"Sending RPC... mode='{audioFiltering.Mode}'");
+            SyncAudioModeClientRpc(audioFiltering.Mode);
+        }
+
+        /// <summary>
+        /// Sync the audio filtering mode called from server
+        /// </summary>
+        /// <param name="mode"></param>
+        [ClientRpc]
+        public void SyncAudioModeClientRpc(AudioFilteringMode mode)
+        {
+            MyLog.Logger.LogDebug("EventClientRpc() called");
+            MyLog.Logger.LogDebug($"isSynced={isSynced}");
+
+            if (!isSynced)
+            {
+                this.isSynced = true;
+                audioFiltering.SetFilterMode(mode, false);
+                MyLog.Logger.LogDebug($"Synced to mode '{mode}'");
+            }
         }
 
         /// <summary>
@@ -73,7 +142,10 @@ namespace Megaphone.Items
             // Play sound on death
             //if (this.playerHeldBy.isPlayerDead && this.clientIsHoldingAndSpeakingIntoThis)
             //    this.BroadcastSFXFromWalkieTalkie(this.playerDieOnWalkieTalkieSFX, (int)this.playerHeldBy.playerClientId);
-            this.playerHeldBy.equippedUsableItemQE = false;
+            if (this.IsOwner)
+            {
+                this.playerHeldBy.equippedUsableItemQE = false;
+            }
             base.DiscardItem();
         }
 
@@ -120,27 +192,7 @@ namespace Megaphone.Items
         /// <param name="buttonDown">Is the button currently pressed</param>
         public override void ItemActivate(bool used, bool buttonDown = true)
         {
-            MyLog.Logger.LogDebug($"ItemActivate({used}, {buttonDown})");
             SwitchOnOff(buttonDown); // Hold to enable
-
-            if (!this.IsOwner)
-            {
-                if (this.playerHeldBy != null)
-                {
-                    MyLog.Logger.LogInfo(
-                        $"Megaphone click. playerheldby: {this.playerHeldBy.name}"
-                    );
-                    AudioMod.SwitchFilterOnOff(this.playerHeldBy, buttonDown);
-                }
-                else
-                {
-                    MyLog.Logger.LogInfo($"Megaphone click. playerheldby: null");
-                }
-            }
-            else
-            {
-                MyLog.Logger.LogDebug($"Megaphone click by owner");
-            }
 
             // Make it detectable by ennemies, do not actually play a sound
             //AudioSource audio = GetComponent<AudioSource>();
@@ -184,13 +236,32 @@ namespace Megaphone.Items
             //);
         }
 
-        public void SwitchOnOff(bool state)
+        public void SwitchOnOff(bool on)
         {
-            MyLog.Logger.LogDebug($"SwitchOnOff({state})");
+            MyLog.Logger.LogDebug($"SwitchOnOff({on})");
             AudioMod.SetupGameobjects(this.playerHeldBy);
 
-            isBeingUsed = state;
-            // Do stuff here
+            isBeingUsed = on;
+
+            if (!this.IsOwner)
+            {
+                if (this.playerHeldBy != null)
+                {
+                    bool res = on ? audioFiltering.Enable() : audioFiltering.Disable();
+                    if (!res)
+                    {
+                        MyLog.Logger.LogError($"Unable to {(on ? "enable" : "disable")}");
+                    }
+                }
+                else
+                {
+                    MyLog.Logger.LogWarning($"playerHeldBy: null");
+                }
+            }
+            else
+            {
+                MyLog.Logger.LogDebug($"Megaphone click by owner");
+            }
         }
     }
 }
