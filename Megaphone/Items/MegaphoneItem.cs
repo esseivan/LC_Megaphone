@@ -11,6 +11,7 @@ namespace Megaphone.Items
     {
         public AudioFiltering audioFiltering;
         protected bool isSynced;
+        protected int TimesPlayedWithoutTurnedOff;
 
         public override void OnNetworkSpawn()
         {
@@ -32,6 +33,7 @@ namespace Megaphone.Items
             insertedBattery.charge = 1;
             itemProperties.positionOffset = new Vector3(0.08f, 0.2f, -0.1f);
             itemProperties.rotationOffset = new Vector3(-90, 180, 38);
+            TimesPlayedWithoutTurnedOff = 0;
 
             this.audioFiltering = new AudioFiltering(this);
 
@@ -142,7 +144,7 @@ namespace Megaphone.Items
             audioFiltering.Disable();
             if (this.playerHeldBy.isPlayerDead && this.isBeingUsed)
             {
-                AudioMod.PlaySFX(this, AudioMod.SFX);
+                AudioMod.PlaySFX(this, AudioMod.SFX, TimesPlayedWithoutTurnedOff);
             }
 
             base.DiscardItem();
@@ -151,6 +153,16 @@ namespace Megaphone.Items
         public override void Update()
         {
             base.Update();
+
+            if (this.isBeingUsed)
+            {
+                TimesPlayedWithoutTurnedOff++;
+                audioFiltering.PlayAudibleNoiseIfApplicable(this, TimesPlayedWithoutTurnedOff);
+            }
+            else
+            {
+                TimesPlayedWithoutTurnedOff = 0;
+            }
 
             // PlayAudibleNoise every second to alert ennemies around
 

@@ -49,6 +49,16 @@ public class MyConfig
             return x;
         }
     }
+    public static float SFXEnemyHearDistance
+    {
+        get
+        {
+            float x = configSFXEnemyHearDistance.Value;
+            if (x <= 0)
+                x = 1.0f;
+            return x;
+        }
+    }
     public static float LoudVoiceVolume
     {
         get
@@ -87,6 +97,7 @@ public class MyConfig
     private static ConfigEntry<float> configHearDistance;
     private static ConfigEntry<float> configSirenHearDistance;
     private static ConfigEntry<float> configSFXHearDistance;
+    private static ConfigEntry<float> configSFXEnemyHearDistance;
     private static ConfigEntry<float> configLoudVoiceVolume;
     private static ConfigEntry<float> configSFXVolume;
     private static ConfigEntry<float> configRobotVoicePitch;
@@ -139,7 +150,7 @@ Min: 0.0
         configSirenHearDistance = p.Config.Bind(
             "Audio.Distances",
             "SirenHearingDistanceModifier",
-            2.25f,
+            2.0f,
             @"Change the distance multiplier the siren can be heard from (switch with Q).
 Min: 0.0
 [Client side]"
@@ -148,8 +159,18 @@ Min: 0.0
         configSFXHearDistance = p.Config.Bind(
             "Audio.Distances",
             "SFXHearingDistanceModifier",
-            2.5f,
+            2.0f,
             @"Change the distance multiplier the SFX can be heard from.
+Min: 0.0
+[Client side]"
+        );
+
+        configSFXEnemyHearDistance = p.Config.Bind(
+            "Audio.Distances",
+            "EnemySFXHearingDistanceModifier",
+            1.0f,
+            @"Change the distance multiplier the SFX can be heard from by enemies.
+This multiplier is applied after the base hear distance modifier.
 Min: 0.0
 [Client side]"
         );

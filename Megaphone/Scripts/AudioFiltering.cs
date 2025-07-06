@@ -145,4 +145,25 @@ public class AudioFiltering
         active = false;
         return true;
     }
+
+    /// <summary>
+    /// Keep playing 'AudibleNoise' to alert ennemies. Call this every update
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="counter"></param>
+    public void PlayAudibleNoiseIfApplicable(MegaphoneItem item, int counter)
+    {
+        if (!active)
+            return;
+        if (_mode != AudioFilteringMode.Siren)
+            return;
+
+        RoundManager.Instance.PlayAudibleNoise(
+            item.transform.position,
+            noiseRange: MyConfig.SFXHearDistance * MyConfig.SFXEnemyHearDistance * 50,
+            noiseLoudness: 1.0f,
+            timesPlayedInSameSpot: counter,
+            noiseIsInsideClosedShip: item.isInElevator && StartOfRound.Instance.hangarDoorsClosed
+        );
+    }
 }

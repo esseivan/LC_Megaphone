@@ -277,7 +277,7 @@ public partial class AudioMod
         AudioPatch.playersPitchTargets[player.playerClientId] = on ? 0.5f : -1; // -1 : skip override
     }
 
-    internal static bool PlaySFX(MegaphoneItem item, AudioClip sound)
+    internal static bool PlaySFX(MegaphoneItem item, AudioClip sound, int counter = 0)
     {
         if (sound == null)
         {
@@ -296,6 +296,13 @@ public partial class AudioMod
         src.maxDistance = MyConfig.SFXHearDistance * 50;
         src.volume = MyConfig.SFXVolume;
         src.PlayOneShot(sound);
+        RoundManager.Instance.PlayAudibleNoise(
+            item.transform.position,
+            noiseRange: src.maxDistance * MyConfig.SFXEnemyHearDistance,
+            noiseLoudness: 1.0f,
+            timesPlayedInSameSpot: counter,
+            noiseIsInsideClosedShip: item.isInElevator && StartOfRound.Instance.hangarDoorsClosed
+        );
 
         return true;
     }
