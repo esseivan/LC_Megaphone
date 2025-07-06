@@ -1,5 +1,6 @@
 ﻿using System;
 using GameNetcodeStuff;
+using Megaphone.Items;
 
 namespace Megaphone.Scripts;
 
@@ -8,16 +9,20 @@ namespace Megaphone.Scripts;
 /// </summary>
 public class AudioFiltering
 {
+    public MegaphoneItem parent;
     public PlayerControllerB player;
+
+    const AudioFilteringMode endNode = AudioFilteringMode.Siren;
+
     private AudioFilteringMode _mode = AudioFilteringMode.Robot;
     public AudioFilteringMode Mode => _mode;
     public bool active = false;
 
-    public AudioFiltering() { }
+    private AudioFiltering() { }
 
-    public AudioFiltering(PlayerControllerB player)
+    public AudioFiltering(MegaphoneItem parent)
     {
-        this.player = player;
+        this.parent = parent;
     }
 
     /// <summary>
@@ -27,8 +32,7 @@ public class AudioFiltering
     /// <returns></returns>
     public bool NextFilterMode(bool enable)
     {
-        AudioFilteringMode newMode =
-            _mode == AudioFilteringMode.Loud ? AudioFilteringMode.Robot : (_mode + 1);
+        AudioFilteringMode newMode = _mode == endNode ? AudioFilteringMode.Robot : (_mode + 1);
         bool res = SetFilterMode(newMode, enable);
         if (res)
         {
@@ -87,10 +91,9 @@ public class AudioFiltering
             case AudioFilteringMode.Loud:
                 AudioMod.EnableLoudVoice(player, true);
                 break;
-            case AudioFilteringMode.HighPitch:
-                return false;
-            case AudioFilteringMode.LowPitch:
-                return false;
+            case AudioFilteringMode.Siren:
+                AudioMod.PlaySFX(parent, AudioMod.Siren);
+                break;
             default:
                 return false;
         }
@@ -120,10 +123,9 @@ public class AudioFiltering
             case AudioFilteringMode.Loud:
                 AudioMod.EnableLoudVoice(player, false);
                 break;
-            case AudioFilteringMode.HighPitch:
-                return false;
-            case AudioFilteringMode.LowPitch:
-                return false;
+            case AudioFilteringMode.Siren:
+                AudioMod.StopSFX(parent);
+                break;
             default:
                 return false;
         }

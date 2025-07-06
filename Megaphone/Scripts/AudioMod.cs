@@ -20,6 +20,9 @@ public partial class AudioMod
     protected static AudioClip sfx,
         siren;
 
+    public static AudioClip SFX => sfx;
+    public static AudioClip Siren => siren;
+
     public static void LoadAssets()
     {
         sfx = Plugin.Assets.LoadAsset<AudioClip>(Plugin.ASSET_PATH_MEGAPHONE_SFX);
@@ -55,15 +58,16 @@ public partial class AudioMod
             return false;
         }
 
-        MyLog.Logger.LogDebug(
-            $"Setting gameobjects for player {player.name} - {player.playerClientId} - {player.actualClientId} - {player.OwnerClientId}"
-        );
         if (setupPlayersID.Contains(player.playerClientId))
         {
-            MyLog.Logger.LogDebug($"Components already set for {player.playerUsername}");
+            //MyLog.Logger.LogDebug($"Components already set for {player.playerUsername}");
             return true;
         }
         setupPlayersID.Add(player.actualClientId);
+
+        MyLog.Logger.LogDebug(
+            $"Setting gameobjects for player {player.name} - {player.playerClientId}"
+        );
 
         MyLog.Logger.LogInfo(
             $"Settings up audio components for player {player.playerUsername} ; ID({player.playerClientId})"
@@ -257,7 +261,33 @@ public partial class AudioMod
         return true;
     }
 
-    internal static bool PlaySFX(PlayerControllerB player, MegaphoneItem item)
+    internal static bool PlaySFX(MegaphoneItem item, AudioClip sound)
+    {
+        if (sound == null)
+        {
+            MyLog.Logger.LogError("SFX is null");
+            return false;
+        }
+        MyLog.Logger.LogDebug("Playing SFX...");
+
+        AudioSource src = item.GetComponent<AudioSource>();
+        if (src == null)
+        {
+            MyLog.Logger.LogError("No AudioSource to play SFX...");
+            return false;
+        }
+
+        float modifier = Plugin.configHearDistance.Value;
+        if (modifier <= 0)
+            modifier = 1.0f;
+        src.maxDistance = (modifier * 50);
+        src.volume = 0.8f;
+        src.PlayOneShot(sound);
+
+        return true;
+    }
+
+    internal static bool StopSFX(MegaphoneItem item)
     {
         if (sfx == null)
         {
@@ -273,7 +303,9 @@ public partial class AudioMod
             return false;
         }
 
-        src.PlayOneShot(sfx);
+        src.maxDistance = 50;
+        src.volume = 1.0f;
+        src.Stop(true);
 
         return true;
     }

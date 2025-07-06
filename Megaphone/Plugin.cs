@@ -40,6 +40,7 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<int> configRarity;
     public static ConfigEntry<int> configPrice;
     public static ConfigEntry<float> configHearDistance;
+    public static ConfigEntry<float> configSirenHearDistance;
 
     public static AssetBundle Assets;
     public static AssetBundle Assets_network;
@@ -74,6 +75,13 @@ public class Plugin : BaseUnityPlugin
             "HearingDistanceModifier",
             2.0f,
             "Change the distance multiplier the voices can be heard from when talking in 'loud mode' (switch with Q). [Client side]"
+        );
+
+        configSirenHearDistance = Config.Bind(
+            "Audio",
+            "SirenHearingDistanceModifier",
+            2.25f,
+            "Change the distance multiplier the siren can be heard from (switch with Q). [Client side]"
         );
     }
 

@@ -33,7 +33,7 @@ namespace Megaphone.Items
             itemProperties.positionOffset = new Vector3(0.08f, 0.2f, -0.1f);
             itemProperties.rotationOffset = new Vector3(-90, 180, 38);
 
-            this.audioFiltering = new AudioFiltering();
+            this.audioFiltering = new AudioFiltering(this);
 
             // Server is always in sync
             this.isSynced = (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer);
@@ -139,9 +139,10 @@ namespace Megaphone.Items
             //    this.BroadcastSFXFromWalkieTalkie(this.playerDieOnWalkieTalkieSFX, (int)this.playerHeldBy.playerClientId);
             this.playerHeldBy.equippedUsableItemQE = false;
 
+            audioFiltering.Disable();
             if (this.playerHeldBy.isPlayerDead && this.isBeingUsed)
             {
-                AudioMod.PlaySFX(this.playerHeldBy, this);
+                AudioMod.PlaySFX(this, AudioMod.SFX);
             }
 
             base.DiscardItem();
@@ -258,7 +259,16 @@ namespace Megaphone.Items
             }
             else
             {
-                MyLog.Logger.LogDebug($"Megaphone click by owner");
+                // Owner
+                //MyLog.Logger.LogDebug($"Megaphone click by owner");
+                if (audioFiltering.Mode == AudioFilteringMode.Siren)
+                {
+                    bool res = on ? audioFiltering.Enable() : audioFiltering.Disable();
+                    if (!res)
+                    {
+                        MyLog.Logger.LogError($"Unable to {(on ? "enable" : "disable")}");
+                    }
+                }
             }
         }
     }
