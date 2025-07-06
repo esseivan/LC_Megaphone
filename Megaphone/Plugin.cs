@@ -35,62 +35,15 @@ public class Plugin : BaseUnityPlugin
     internal static new ManualLogSource Logger { get; private set; } = null!;
     internal static Harmony Harmony { get; set; }
 
-    public static ConfigEntry<bool> configCanBuy;
-    public static ConfigEntry<bool> configIsScrap;
-    public static ConfigEntry<int> configRarity;
-    public static ConfigEntry<int> configPrice;
-    public static ConfigEntry<float> configHearDistance;
-    public static ConfigEntry<float> configSirenHearDistance;
-
     public static AssetBundle Assets;
     public static AssetBundle Assets_network;
-
-    private void SetupConfigBinds()
-    {
-        configCanBuy = Config.Bind(
-            "Item",
-            "CanBuy",
-            true,
-            "Can the item be bought from the terminal. [Client side]"
-        );
-
-        configIsScrap = Config.Bind(
-            "Item",
-            "IsScrap",
-            true,
-            "Can the item spawn in interiors. [Host side]"
-        );
-
-        configRarity = Config.Bind(
-            "Item",
-            "Rarity",
-            100,
-            "Rarity of the object. 0 is never, 100 is often. [Host side]"
-        );
-
-        configPrice = Config.Bind("Item", "Price", 15, "Buy cost of the item. [Client side]");
-
-        configHearDistance = Config.Bind(
-            "Audio",
-            "HearingDistanceModifier",
-            2.0f,
-            "Change the distance multiplier the voices can be heard from when talking in 'loud mode' (switch with Q). [Client side]"
-        );
-
-        configSirenHearDistance = Config.Bind(
-            "Audio",
-            "SirenHearingDistanceModifier",
-            2.25f,
-            "Change the distance multiplier the siren can be heard from (switch with Q). [Client side]"
-        );
-    }
 
     private void Awake()
     {
         Logger = base.Logger;
         Instance = this;
 
-        SetupConfigBinds();
+        MyConfig.Setup(this);
 
         LoadAssets();
 
@@ -105,8 +58,6 @@ public class Plugin : BaseUnityPlugin
 
     private static void CreateItems()
     {
-        int iPrice = configPrice.Value;
-        int iRarity = configRarity.Value;
         Item megaphoneItem = Assets.LoadAsset<Item>(ASSET_PATH_MEGAPHONE_ITEM);
         Logger.LogDebug($"Found item {megaphoneItem.itemName}");
         GrabbableObject script = megaphoneItem.spawnPrefab.AddComponent<MegaphoneItem>();
@@ -120,16 +71,16 @@ public class Plugin : BaseUnityPlugin
 
         LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(megaphoneItem.spawnPrefab);
 
-        if (configIsScrap.Value)
+        if (MyConfig.IsScrap)
         {
             LethalLib.Modules.Items.RegisterScrap(
                 megaphoneItem,
-                iRarity,
+                MyConfig.Rarity,
                 LethalLib.Modules.Levels.LevelTypes.All
             );
         }
 
-        if (configCanBuy.Value)
+        if (MyConfig.CanBuy)
         {
             TerminalNode iTerminalNode = Assets.LoadAsset<TerminalNode>(ASSET_PATH_MEGAPHONE_TNODE);
             LethalLib.Modules.Items.RegisterShopItem(
@@ -137,7 +88,7 @@ public class Plugin : BaseUnityPlugin
                 null,
                 null,
                 iTerminalNode,
-                iPrice
+                MyConfig.Price
             );
         }
         else
