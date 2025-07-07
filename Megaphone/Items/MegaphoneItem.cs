@@ -15,14 +15,14 @@ namespace Megaphone.Items
 
         public override void OnNetworkSpawn()
         {
-            MyLog.Logger.LogDebug("OnNetworkSpawn() called");
+            MyLog.LogDebug("OnNetworkSpawn() called");
 
             base.OnNetworkSpawn();
         }
 
         public override void Start()
         {
-            MyLog.Logger.LogDebug("MegaphoneItem item created !");
+            MyLog.LogDebug("MegaphoneItem item created !");
             base.Start();
             itemProperties.itemIsTrigger = false;
             itemProperties.batteryUsage = 120; // Number of seconds it can stay on
@@ -59,7 +59,7 @@ namespace Megaphone.Items
         /// </summary>
         public override void PocketItem()
         {
-            MyLog.Logger.LogDebug($"PocketItem()");
+            MyLog.LogDebug($"PocketItem()");
             if (this.playerHeldBy != null)
             {
                 this.playerHeldBy.equippedUsableItemQE = false;
@@ -75,14 +75,14 @@ namespace Megaphone.Items
         /// </summary>
         public override void EquipItem()
         {
-            MyLog.Logger.LogDebug($"Equipped");
+            MyLog.LogDebug($"Equipped");
 
             base.EquipItem();
 
             audioFiltering.player = this.playerHeldBy;
             if (this.playerHeldBy == null)
             {
-                MyLog.Logger.LogWarning(
+                MyLog.LogWarning(
                     $"Unable to continue, player is null... Owner must re-equip the item"
                 );
                 return;
@@ -94,7 +94,7 @@ namespace Megaphone.Items
 
             if (!isSynced)
             {
-                MyLog.Logger.LogDebug($"Syncing mode...");
+                MyLog.LogDebug($"Syncing mode...");
                 SyncAudioModeToClientsServerRpc();
             }
         }
@@ -108,7 +108,7 @@ namespace Megaphone.Items
             if (!(NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer))
                 return;
 
-            MyLog.Logger.LogDebug($"Sending RPC... mode='{audioFiltering.Mode}'");
+            MyLog.LogInfo($"Sending RPC... mode='{audioFiltering.Mode}'");
             SyncAudioModeClientRpc(audioFiltering.Mode);
         }
 
@@ -119,14 +119,14 @@ namespace Megaphone.Items
         [ClientRpc]
         public void SyncAudioModeClientRpc(AudioFilteringMode mode)
         {
-            MyLog.Logger.LogDebug("EventClientRpc() called");
-            MyLog.Logger.LogDebug($"isSynced={isSynced}");
+            MyLog.LogDebug("EventClientRpc() called");
+            MyLog.LogDebug($"isSynced={isSynced}");
 
             if (!isSynced)
             {
                 this.isSynced = true;
                 audioFiltering.SetFilterMode(mode, false);
-                MyLog.Logger.LogDebug($"Synced to mode '{mode}'");
+                MyLog.LogInfo($"Synced to mode '{mode}'");
             }
         }
 
@@ -135,7 +135,7 @@ namespace Megaphone.Items
         /// </summary>
         public override void DiscardItem()
         {
-            MyLog.Logger.LogDebug($"DiscardItem()");
+            MyLog.LogDebug($"DiscardItem()");
             // Play sound on death
             //if (this.playerHeldBy.isPlayerDead && this.clientIsHoldingAndSpeakingIntoThis)
             //    this.BroadcastSFXFromWalkieTalkie(this.playerDieOnWalkieTalkieSFX, (int)this.playerHeldBy.playerClientId);
@@ -207,18 +207,18 @@ namespace Megaphone.Items
 
             // Make it detectable by ennemies, do not actually play a sound
             //AudioSource audio = GetComponent<AudioSource>();
-            //MyLog.Logger.LogDebug($"Found audio : {audio}");
+            //MyLog.LogDebug($"Found audio : {audio}");
             //if (audio != null)
             //{
-            //    MyLog.Logger.LogDebug($"\t{audio.isActiveAndEnabled}");
-            //    MyLog.Logger.LogDebug($"\t{audio.clip}");
-            //    MyLog.Logger.LogDebug($"\t{audio.clip.name}");
+            //    MyLog.LogDebug($"\t{audio.isActiveAndEnabled}");
+            //    MyLog.LogDebug($"\t{audio.clip}");
+            //    MyLog.LogDebug($"\t{audio.clip.name}");
             //    audio.Play();
 
-            //    MyLog.Logger.LogDebug($"Found RoundManager {RoundManager.Instance}");
-            //    MyLog.Logger.LogDebug($"Found isInElevator {isInElevator}");
-            //    MyLog.Logger.LogDebug($"Found StartOfRound.Instance {StartOfRound.Instance}");
-            //    MyLog.Logger.LogDebug(
+            //    MyLog.LogDebug($"Found RoundManager {RoundManager.Instance}");
+            //    MyLog.LogDebug($"Found isInElevator {isInElevator}");
+            //    MyLog.LogDebug($"Found StartOfRound.Instance {StartOfRound.Instance}");
+            //    MyLog.LogDebug(
             //        $"Found StartOfRound.Instance.hangarDoorsClosed {StartOfRound.Instance.hangarDoorsClosed}"
             //    );
             //    RoundManager.Instance.PlayAudibleNoise(
@@ -235,7 +235,8 @@ namespace Megaphone.Items
         /// </summary>
         public override void UseUpBatteries()
         {
-            MyLog.Logger.LogDebug($"UseUpBatteries()");
+            MyLog.LogDebug($"UseUpBatteries()");
+            SwitchOnOff(false);
             base.UseUpBatteries();
             //this.SwitchFlashlight(false);
             //this.flashlightAudio.PlayOneShot(this.outOfBatteriesClip, 1f);
@@ -249,7 +250,7 @@ namespace Megaphone.Items
 
         public void SwitchOnOff(bool on)
         {
-            MyLog.Logger.LogDebug($"SwitchOnOff({on})");
+            MyLog.LogDebug($"SwitchOnOff({on})");
             AudioMod.SetupGameobjects(this.playerHeldBy);
 
             isBeingUsed = on;
@@ -261,24 +262,24 @@ namespace Megaphone.Items
                     bool res = on ? audioFiltering.Enable() : audioFiltering.Disable();
                     if (!res)
                     {
-                        MyLog.Logger.LogError($"Unable to {(on ? "enable" : "disable")}");
+                        MyLog.LogError($"Unable to {(on ? "enable" : "disable")}");
                     }
                 }
                 else
                 {
-                    MyLog.Logger.LogWarning($"playerHeldBy: null");
+                    MyLog.LogWarning($"playerHeldBy: null");
                 }
             }
             else
             {
                 // Owner
-                //MyLog.Logger.LogDebug($"Megaphone click by owner");
+                MyLog.LogInfo($"Megaphone click by owner");
                 if (audioFiltering.Mode == AudioFilteringMode.Siren)
                 {
                     bool res = on ? audioFiltering.Enable() : audioFiltering.Disable();
                     if (!res)
                     {
-                        MyLog.Logger.LogError($"Unable to {(on ? "enable" : "disable")}");
+                        MyLog.LogError($"Unable to {(on ? "enable" : "disable")}");
                     }
                 }
             }

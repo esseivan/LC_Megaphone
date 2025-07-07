@@ -36,13 +36,11 @@ public class AudioFiltering
         bool res = SetFilterMode(newMode, enable);
         if (res)
         {
-            MyLog.Logger.LogDebug(
-                $"Switched to mode {Enum.GetName(typeof(AudioFilteringMode), _mode)}"
-            );
+            MyLog.LogInfo($"Switched to mode {Enum.GetName(typeof(AudioFilteringMode), _mode)}");
         }
         else
         {
-            MyLog.Logger.LogError(
+            MyLog.LogError(
                 $"Unable to switch to mode {Enum.GetName(typeof(AudioFilteringMode), _mode)}"
             );
         }
@@ -74,11 +72,11 @@ public class AudioFiltering
     /// <returns></returns>
     public bool Enable()
     {
-        MyLog.Logger.LogDebug($"Enabling...");
+        MyLog.LogDebug($"Enabling...");
 
         if (active)
         {
-            MyLog.Logger.LogDebug($"Already enabled...");
+            MyLog.LogDebug($"Already enabled...");
             return true;
         }
 
@@ -113,11 +111,11 @@ public class AudioFiltering
     /// <returns></returns>
     public bool Disable()
     {
-        MyLog.Logger.LogDebug($"Disabling...");
+        MyLog.LogDebug($"Disabling...");
 
         if (!active)
         {
-            MyLog.Logger.LogDebug($"Already disabled...");
+            MyLog.LogDebug($"Already disabled...");
             return true;
         }
 

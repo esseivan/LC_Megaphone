@@ -52,77 +52,71 @@ public partial class AudioMod
     {
         if (player == null)
         {
-            MyLog.Logger.LogError(
-                "Unable to continue, player is null... Owner must re-equip the item"
-            );
+            MyLog.LogError("Unable to continue, player is null... Owner must re-equip the item");
             return false;
         }
 
         if (setupPlayersID.Contains(player.playerClientId))
         {
-            //MyLog.Logger.LogDebug($"Components already set for {player.playerUsername}");
+            //MyLog.LogDebug($"Components already set for {player.playerUsername}");
             return true;
         }
         setupPlayersID.Add(player.actualClientId);
 
-        MyLog.Logger.LogDebug(
-            $"Setting gameobjects for player {player.name} - {player.playerClientId}"
-        );
+        MyLog.LogDebug($"Setting gameobjects for player {player.name} - {player.playerClientId}");
 
-        MyLog.Logger.LogInfo(
+        MyLog.LogInfo(
             $"Settings up audio components for player {player.playerUsername} ; ID({player.playerClientId})"
         );
 
         AudioSource src = player.currentVoiceChatAudioSource;
         if (src == null)
         {
-            MyLog.Logger.LogInfo($"No AudioSource found...");
+            MyLog.LogInfo($"No AudioSource found...");
             return false;
         }
 
         AudioEchoFilter echo = src.GetComponent<AudioEchoFilter>();
         if (echo == null)
         {
-            MyLog.Logger.LogDebug($"AudioEchoFilter missing");
+            MyLog.LogDebug($"AudioEchoFilter missing");
             src.gameObject.AddComponent<AudioEchoFilter>();
             echo = src.GetComponent<AudioEchoFilter>();
         }
         echo.enabled = false;
-        MyLog.Logger.LogDebug($"Echo ready");
+        MyLog.LogDebug($"Echo ready");
 
         AudioHighPassFilter hp = src.GetComponent<AudioHighPassFilter>();
         if (hp == null)
         {
-            MyLog.Logger.LogDebug($"AudioHighPassFilter missing");
+            MyLog.LogDebug($"AudioHighPassFilter missing");
             src.gameObject.AddComponent<AudioHighPassFilter>();
             hp = src.GetComponent<AudioHighPassFilter>();
         }
         hp.enabled = false;
-        MyLog.Logger.LogDebug($"HighPass ready");
+        MyLog.LogDebug($"HighPass ready");
 
         AudioDistortionFilter dist = src.GetComponent<AudioDistortionFilter>();
         if (dist == null)
         {
-            MyLog.Logger.LogDebug($"AudioDistortionFilter missing");
+            MyLog.LogDebug($"AudioDistortionFilter missing");
             src.gameObject.AddComponent<AudioDistortionFilter>();
             dist = src.GetComponent<AudioDistortionFilter>();
         }
         dist.enabled = false;
-        MyLog.Logger.LogDebug($"Distortion ready");
+        MyLog.LogDebug($"Distortion ready");
 
         AudioChorusFilter chorus = src.GetComponent<AudioChorusFilter>();
         if (chorus == null)
         {
-            MyLog.Logger.LogDebug($"AudioHighPassFilter missing");
+            MyLog.LogDebug($"AudioHighPassFilter missing");
             src.gameObject.AddComponent<AudioChorusFilter>();
             chorus = src.GetComponent<AudioChorusFilter>();
         }
         chorus.enabled = false;
-        MyLog.Logger.LogDebug($"Chorus ready");
+        MyLog.LogDebug($"Chorus ready");
 
-        MyLog.Logger.LogDebug(
-            $"Player {player.playerUsername} ; ID({player.playerClientId}) ready !"
-        );
+        MyLog.LogInfo($"Player {player.playerUsername} ; ID({player.playerClientId}) ready !");
 
         return true;
     }
@@ -137,27 +131,27 @@ public partial class AudioMod
 
         if (echo == null)
         {
-            MyLog.Logger.LogError($"AudioEchoFilter missing");
+            MyLog.LogError($"AudioEchoFilter missing");
             return false;
         }
         if (lp == null)
         {
-            MyLog.Logger.LogError($"OccludeAudio missing");
+            MyLog.LogError($"OccludeAudio missing");
             return false;
         }
         if (hp == null)
         {
-            MyLog.Logger.LogError($"AudioHighPassFilter missing");
+            MyLog.LogError($"AudioHighPassFilter missing");
             return false;
         }
         if (chorus == null)
         {
-            MyLog.Logger.LogError($"AudioChorusFilter missing");
+            MyLog.LogError($"AudioChorusFilter missing");
             return false;
         }
         if (dist == null)
         {
-            MyLog.Logger.LogError($"AudioDistortionFilter missing");
+            MyLog.LogError($"AudioDistortionFilter missing");
             return false;
         }
 
@@ -189,7 +183,7 @@ public partial class AudioMod
 
     internal static bool EnableRobotVoice(PlayerControllerB player, bool on)
     {
-        MyLog.Logger.LogInfo(
+        MyLog.LogInfo(
             $"{(on ? "Enabling" : "Disabling")} robot voice for player {player.playerUsername}"
         );
 
@@ -224,7 +218,7 @@ public partial class AudioMod
 
     internal static bool EnableLoudVoice(PlayerControllerB player, bool on)
     {
-        MyLog.Logger.LogInfo(
+        MyLog.LogInfo(
             $"{(on ? "Enabling" : "Disabling")} loud voice for player {player.playerUsername}"
         );
 
@@ -261,7 +255,7 @@ public partial class AudioMod
 
     internal static void EnableHighPitch(PlayerControllerB player, bool on)
     {
-        MyLog.Logger.LogInfo(
+        MyLog.LogInfo(
             $"{(on ? "Enabling" : "Disabling")} high pitch voice for player {player.playerUsername}"
         );
 
@@ -270,7 +264,7 @@ public partial class AudioMod
 
     internal static void EnableLowPitch(PlayerControllerB player, bool on)
     {
-        MyLog.Logger.LogInfo(
+        MyLog.LogInfo(
             $"{(on ? "Enabling" : "Disabling")} low pitch voice for player {player.playerUsername}"
         );
 
@@ -281,15 +275,15 @@ public partial class AudioMod
     {
         if (sound == null)
         {
-            MyLog.Logger.LogError("SFX is null");
+            MyLog.LogError("SFX is null");
             return false;
         }
-        MyLog.Logger.LogDebug("Playing SFX...");
+        MyLog.LogInfo("Playing SFX...");
 
         AudioSource src = item.GetComponent<AudioSource>();
         if (src == null)
         {
-            MyLog.Logger.LogError("No AudioSource to play SFX...");
+            MyLog.LogError("No AudioSource to play SFX...");
             return false;
         }
 
@@ -311,15 +305,15 @@ public partial class AudioMod
     {
         if (sfx == null)
         {
-            MyLog.Logger.LogError("SFX is null");
+            MyLog.LogError("SFX is null");
             return false;
         }
-        MyLog.Logger.LogDebug("Playing SFX...");
+        MyLog.LogInfo("Stopping SFX...");
 
         AudioSource src = item.GetComponent<AudioSource>();
         if (src == null)
         {
-            MyLog.Logger.LogError("No AudioSource to play SFX...");
+            MyLog.LogError("No AudioSource to play SFX...");
             return false;
         }
 

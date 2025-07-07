@@ -42,7 +42,7 @@ public class AudioPatch
     {
         // Register new connected user
         PlayerControllerB player = __instance.allPlayerScripts[assignedPlayerObjectId];
-        MyLog.Logger.LogDebug($"Player {player.name} connected");
+        MyLog.LogDebug($"Player {player.name} connected");
         AudioMod.RegisterNewPlayer(player);
     }
 
@@ -59,7 +59,7 @@ public class AudioPatch
                 .currentVoiceChatAudioSource;
             if (voiceChatAudioSource == null)
             {
-                MyLog.Logger.LogError("voiceChatAudioSource is null...");
+                MyLog.LogError("voiceChatAudioSource is null...");
             }
             voiceChatAudioSource.GetComponent<AudioHighPassFilter>().enabled = true;
         }
@@ -81,7 +81,7 @@ public class AudioPatch
         if (targetPitch < 0.5f || targetPitch > 2.0f || targetPitch == 1.0f)
             return;
 
-        MyLog.Logger.LogDebug($"Overwriting pitch for {clientId} to {targetPitch}");
+        MyLog.LogDebug($"Overwriting pitch for {clientId} to {targetPitch}");
 
         SoundManager.Instance.playerVoicePitchTargets[clientId] = targetPitch;
     }

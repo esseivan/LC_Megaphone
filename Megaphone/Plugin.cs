@@ -67,7 +67,7 @@ public class Plugin : BaseUnityPlugin
         script.itemProperties = megaphoneItem;
         script.grabbableToEnemies = true;
 
-        MyLog.Logger.LogDebug($"Found item '{megaphoneItem.itemName}'");
+        MyLog.LogDebug($"Found item '{megaphoneItem.itemName}'");
 
         LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(megaphoneItem.spawnPrefab);
 
