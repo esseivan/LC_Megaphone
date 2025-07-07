@@ -29,6 +29,10 @@ source = "esn_megaphone"
 target = "plugins/ESN.Megaphone/assets/"
 
 [[build.copy]]
+source = "esn_network"
+target = "plugins/ESN.Megaphone/assets/"
+
+[[build.copy]]
 source = "../../CHANGELOG.md"
 target = "/"
 
