@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Megaphone [1.0.1] 
 - No debug log in release build
+- Switching off when batteries run out
 
 ## Megaphone [1.0.0] 
 - Added missing network asset
