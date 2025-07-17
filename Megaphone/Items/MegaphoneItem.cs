@@ -52,6 +52,7 @@ namespace Megaphone.Items
                 return;
 
             audioFiltering.NextFilterMode(this.isBeingUsed);
+            UpdateTooltips();
         }
 
         /// <summary>
@@ -92,6 +93,8 @@ namespace Megaphone.Items
 
             AudioMod.SetupGameobjects(this.playerHeldBy);
 
+            UpdateTooltips();
+
             if (!isSynced)
             {
                 MyLog.LogDebug($"Syncing mode...");
@@ -126,8 +129,45 @@ namespace Megaphone.Items
             {
                 this.isSynced = true;
                 audioFiltering.SetFilterMode(mode, false);
+                UpdateTooltips();
                 MyLog.LogInfo($"Synced to mode '{mode}'");
             }
+        }
+
+        protected void UpdateTooltips()
+        {
+            AudioFilteringMode mode = audioFiltering.Mode;
+            string name;
+            switch (mode)
+            {
+                case AudioFilteringMode.Robot:
+                    name = "Robot";
+                    break;
+                case AudioFilteringMode.Siren:
+                    name = "Siren";
+                    break;
+                case AudioFilteringMode.Loud:
+                    name = "Loud";
+                    break;
+                case AudioFilteringMode.HighPitch:
+                    name = "High Pitch";
+                    break;
+                case AudioFilteringMode.LowPitch:
+                    name = "Low Pitch";
+                    break;
+                default:
+                    name = "Unknown";
+                    break;
+            }
+
+            string[] tooltip = { "Change mode : [Q]", "Mode : " + name };
+
+            this.itemProperties.toolTips = tooltip;
+            HUDManager.Instance.ChangeControlTipMultiple(
+                this.itemProperties.toolTips,
+                true,
+                this.itemProperties
+            );
         }
 
         /// <summary>
