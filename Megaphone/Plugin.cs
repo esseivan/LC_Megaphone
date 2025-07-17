@@ -59,6 +59,9 @@ public class Plugin : BaseUnityPlugin
     private static void CreateItems()
     {
         Item megaphoneItem = Assets.LoadAsset<Item>(ASSET_PATH_MEGAPHONE_ITEM);
+        megaphoneItem.minValue = 30;
+        megaphoneItem.maxValue = 60;
+
         Logger.LogDebug($"Found item {megaphoneItem.itemName}");
         GrabbableObject script = megaphoneItem.spawnPrefab.AddComponent<MegaphoneItem>();
         Logger.LogDebug($"Found script {script}");
