@@ -189,6 +189,8 @@ public class Plugin : BaseUnityPlugin
         Logger.LogDebug("Patching...");
 
         Harmony.PatchAll(typeof(AudioPatch));
+        Harmony.PatchAll(typeof(BlobPatch));
+        Harmony.PatchAll(typeof(PufferPatch));
         Harmony.PatchAll(typeof(NetworkObjectManager));
 
         NetcodePatcher();
