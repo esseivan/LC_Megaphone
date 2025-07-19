@@ -197,7 +197,7 @@ namespace Megaphone.Items
             if (this.isBeingUsed)
             {
                 TimesPlayedWithoutTurnedOff++;
-                audioFiltering.PlayAudibleNoiseIfApplicable(this, TimesPlayedWithoutTurnedOff);
+                audioFiltering.PlaySirenAudibleNoiseIfApplicable(this, TimesPlayedWithoutTurnedOff);
             }
             else
             {

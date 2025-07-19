@@ -96,7 +96,7 @@ public class AudioFiltering
                 AudioMod.EnableLowPitch(player, true);
                 break;
             case AudioFilteringMode.Siren:
-                AudioMod.PlaySFX(parent, AudioMod.Siren);
+                AudioMod.PlaySFX(parent, AudioMod.Siren, noiseID: MyConfig.SIREN_NOISE_ID);
                 break;
             default:
                 return false;
@@ -149,7 +149,7 @@ public class AudioFiltering
     /// </summary>
     /// <param name="item"></param>
     /// <param name="counter"></param>
-    public void PlayAudibleNoiseIfApplicable(MegaphoneItem item, int counter)
+    public void PlaySirenAudibleNoiseIfApplicable(MegaphoneItem item, int counter)
     {
         if (!active)
             return;
@@ -161,7 +161,8 @@ public class AudioFiltering
             noiseRange: MyConfig.SFXHearDistance * MyConfig.SFXEnemyHearDistance * 50,
             noiseLoudness: 1.0f,
             timesPlayedInSameSpot: counter,
-            noiseIsInsideClosedShip: item.isInElevator && StartOfRound.Instance.hangarDoorsClosed
+            noiseIsInsideClosedShip: item.isInElevator && StartOfRound.Instance.hangarDoorsClosed,
+            noiseID: MyConfig.SIREN_NOISE_ID
         );
     }
 }

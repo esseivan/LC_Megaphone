@@ -8,6 +8,8 @@ namespace Megaphone;
 
 public class MyConfig
 {
+    public const int SIREN_NOISE_ID = 1880;
+
     public static bool CanBuy => configCanBuy.Value;
     public static bool IsScrap => configIsScrap.Value;
     public static int Rarity
