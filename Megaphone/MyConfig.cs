@@ -89,6 +89,22 @@ public class MyConfig
             return x;
         }
     }
+    public static int ScrapMinValue
+    {
+        get
+        {
+            int x = (int)MathF.Max(0, configScrapMinPrice.Value);
+            return x;
+        }
+    }
+    public static int ScrapMaxValue
+    {
+        get
+        {
+            int x = (int)MathF.Max(ScrapMinValue, configScrapMaxPrice.Value);
+            return x;
+        }
+    }
 
     private static ConfigEntry<bool> configCanBuy;
     private static ConfigEntry<bool> configIsScrap;
@@ -101,6 +117,8 @@ public class MyConfig
     private static ConfigEntry<float> configLoudVoiceVolume;
     private static ConfigEntry<float> configSFXVolume;
     private static ConfigEntry<float> configRobotVoicePitch;
+    private static ConfigEntry<int> configScrapMinPrice;
+    private static ConfigEntry<int> configScrapMaxPrice;
 
     public static void Setup(BaseUnityPlugin p)
     {
@@ -201,6 +219,24 @@ Min: 0.0    Max: 1.2
             @"Set the pitch for the robot voice.
 Min: 0.5    Max: 2.0
 [Client side]"
+        );
+
+        configScrapMinPrice = p.Config.Bind(
+            "Scrap",
+            "ScrapMinPrince",
+            30,
+            @"Set the minimum scrap sell value.
+Min: 0
+[Host side]"
+        );
+
+        configScrapMaxPrice = p.Config.Bind(
+            "Scrap",
+            "ScrapMaxPrince",
+            60,
+            @"Set the maximum scrap sell value.
+Min: <ScrapMinPrince>
+[Host side]"
         );
     }
 }
