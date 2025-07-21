@@ -8,6 +8,8 @@ namespace Megaphone;
 
 public class MyConfig
 {
+    public const int SIREN_NOISE_ID = 1880;
+
     public static bool CanBuy => configCanBuy.Value;
     public static bool IsScrap => configIsScrap.Value;
     public static int Rarity
@@ -89,6 +91,22 @@ public class MyConfig
             return x;
         }
     }
+    public static int ScrapMinValue
+    {
+        get
+        {
+            int x = (int)MathF.Max(0, configScrapMinPrice.Value);
+            return x;
+        }
+    }
+    public static int ScrapMaxValue
+    {
+        get
+        {
+            int x = (int)MathF.Max(ScrapMinValue, configScrapMaxPrice.Value);
+            return x;
+        }
+    }
 
     private static ConfigEntry<bool> configCanBuy;
     private static ConfigEntry<bool> configIsScrap;
@@ -101,6 +119,8 @@ public class MyConfig
     private static ConfigEntry<float> configLoudVoiceVolume;
     private static ConfigEntry<float> configSFXVolume;
     private static ConfigEntry<float> configRobotVoicePitch;
+    private static ConfigEntry<int> configScrapMinPrice;
+    private static ConfigEntry<int> configScrapMaxPrice;
 
     public static void Setup(BaseUnityPlugin p)
     {

@@ -136,6 +136,9 @@ namespace Megaphone.Items
 
         protected void UpdateTooltips()
         {
+            if (!IsOwner)
+                return;
+
             AudioFilteringMode mode = audioFiltering.Mode;
             string name;
             switch (mode)
@@ -197,7 +200,7 @@ namespace Megaphone.Items
             if (this.isBeingUsed)
             {
                 TimesPlayedWithoutTurnedOff++;
-                audioFiltering.PlayAudibleNoiseIfApplicable(this, TimesPlayedWithoutTurnedOff);
+                audioFiltering.PlaySirenAudibleNoiseIfApplicable(this, TimesPlayedWithoutTurnedOff);
             }
             else
             {

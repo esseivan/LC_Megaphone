@@ -59,8 +59,8 @@ public class Plugin : BaseUnityPlugin
     private static void CreateItems()
     {
         Item megaphoneItem = Assets.LoadAsset<Item>(ASSET_PATH_MEGAPHONE_ITEM);
-        megaphoneItem.minValue = 30;
-        megaphoneItem.maxValue = 60;
+        megaphoneItem.minValue = (int)Mathf.Round(MyConfig.ScrapMinValue / 0.4f);
+        megaphoneItem.maxValue = (int)Mathf.Round(MyConfig.ScrapMaxValue / 0.4f);
 
         Logger.LogDebug($"Found item {megaphoneItem.itemName}");
         GrabbableObject script = megaphoneItem.spawnPrefab.AddComponent<MegaphoneItem>();
@@ -189,6 +189,8 @@ public class Plugin : BaseUnityPlugin
         Logger.LogDebug("Patching...");
 
         Harmony.PatchAll(typeof(AudioPatch));
+        Harmony.PatchAll(typeof(BlobPatch));
+        Harmony.PatchAll(typeof(PufferPatch));
         Harmony.PatchAll(typeof(NetworkObjectManager));
 
         NetcodePatcher();
