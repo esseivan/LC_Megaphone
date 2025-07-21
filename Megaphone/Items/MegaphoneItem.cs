@@ -136,6 +136,9 @@ namespace Megaphone.Items
 
         protected void UpdateTooltips()
         {
+            if (!IsOwner)
+                return;
+
             AudioFilteringMode mode = audioFiltering.Mode;
             string name;
             switch (mode)
