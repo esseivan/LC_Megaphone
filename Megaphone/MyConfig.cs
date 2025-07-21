@@ -20,7 +20,7 @@ public class MyConfig
             return x;
         }
     }
-    public static int Price => configPrice.Value;
+    public static int Price => (int)MathF.Max(0, configPrice.Value);
     public static float HearDistance
     {
         get
@@ -126,9 +126,10 @@ public class MyConfig
     {
         configCanBuy = p.Config.Bind(
             "Item",
-            "CanBuy",
-            true,
+            "CanBeBought",
+            false,
             @"Can the item be bought from the terminal.
+Default: false
 [Client side]"
         );
 
@@ -137,23 +138,28 @@ public class MyConfig
             "IsScrap",
             true,
             @"Can the item spawn in interiors.
+Not recommended to have both this and 'CanBuy' set to true.
+Default: true
 [Host side]"
         );
 
         configRarity = p.Config.Bind(
             "Item",
-            "Rarity",
-            100,
+            "ScrapRarity",
+            10,
             @"Rarity of the object. 0 is never, 100 is often.
 Min: 0      Max: 100
+Default: 10
 [Host side]"
         );
 
         configPrice = p.Config.Bind(
             "Item",
             "Price",
-            15,
+            60,
             @"Buy cost of the item.
+Min: 0
+Default: 60
 [Client side]"
         );
 
@@ -164,6 +170,7 @@ Min: 0      Max: 100
             @"Change the distance multiplier the voices can be heard from when talking in
 'loud mode' (switch with Q).
 Min: 0.0
+Default: 2.0
 [Client side]"
         );
 
@@ -173,6 +180,7 @@ Min: 0.0
             2.0f,
             @"Change the distance multiplier the siren can be heard from (switch with Q).
 Min: 0.0
+Default: 2.0
 [Client side]"
         );
 
@@ -182,6 +190,7 @@ Min: 0.0
             2.0f,
             @"Change the distance multiplier the SFX can be heard from.
 Min: 0.0
+Default: 2.0
 [Client side]"
         );
 
@@ -192,6 +201,7 @@ Min: 0.0
             @"Change the distance multiplier the SFX can be heard from by enemies.
 This multiplier is applied after the base hear distance modifier.
 Min: 0.0
+Default: 1.0
 [Client side]"
         );
 
@@ -202,6 +212,7 @@ Min: 0.0
             @"Volume multiplier of the 'Loud voice' filter. Recommended below 1.0 because
 the distortion increases the volume, 1.0 is already higher than normal voice.
 Min: 0.0    Max: 1.2
+Default: 0.9
 [Client side]"
         );
 
@@ -211,6 +222,7 @@ Min: 0.0    Max: 1.2
             1.0f,
             @"Volume multiplier of the SFX sounds.
 Min: 0.0    Max: 1.2
+Default: 1.0
 [Client side]"
         );
 
@@ -220,6 +232,7 @@ Min: 0.0    Max: 1.2
             0.9f,
             @"Set the pitch for the robot voice.
 Min: 0.5    Max: 2.0
+Default: 0.9
 [Client side]"
         );
 
@@ -229,6 +242,7 @@ Min: 0.5    Max: 2.0
             30,
             @"Set the minimum scrap sell value.
 Min: 0
+Default: 30
 [Host side]"
         );
 
@@ -238,6 +252,7 @@ Min: 0
             60,
             @"Set the maximum scrap sell value.
 Min: <ScrapMinPrince>
+Default: 60
 [Host side]"
         );
     }
